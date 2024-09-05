@@ -1,4 +1,4 @@
-version: 0.2    
+version: 0.2
 phases:
   install:
     runtime-versions:
@@ -28,8 +28,26 @@ phases:
       # Package the Lambda function for deployment, targeting .NET 8
       - dotnet lambda package --configuration Release --framework net8.0 --output-package ../deploy-package.zip
 
-      # Upload zip output to AWS S3
-      - aws s3 cp ../deploy-package.zip s3://web-blog-lv-bk/deploy-package.zip
+      # Create a temporary directory for the deployment package
+      - mkdir temp-deploy
+      - cp ../appspec.yml temp-deploy/
+      - cp -r ../scripts temp-deploy/
+
+      # Add the deploy package to the temporary directory
+      - cp ../deploy-package.zip temp-deploy/
+
+      # Change to the temporary directory
+      - cd temp-deploy
+
+      # Create a new zip file including appspec.yml, scripts, and the deploy package
+      - zip -r deploy-package.zip *
+
+      # Upload the new zip file to AWS S3
+      - aws s3 cp deploy-package.zip s3://web-blog-lv-bk/deploy-package.zip
+
+      # Clean up
+      - cd ..
+      - rm -rf temp-deploy
 
 artifacts:
   files:
