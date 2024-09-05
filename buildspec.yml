@@ -28,6 +28,9 @@ phases:
       # Package the Lambda function for deployment, targeting .NET 8
       - dotnet lambda package --configuration Release --framework net8.0 --output-package ../deploy-package.zip
 
+      # Upload zip output to AWS S3
+      - aws s3 cp deploy-package.zip s3://codepipeline-eu-north-1-967377089732/deploy-package.zip
+
 artifacts:
   files:
     - deploy-package.zip  # Specify the package output as an artifact
