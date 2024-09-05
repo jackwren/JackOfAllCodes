@@ -1,4 +1,3 @@
-```
 version: 0.2    
 phases:
   install:
@@ -8,4 +7,3 @@ phases:
     commands:
       - dotnet restore JackOfAllCodes.sln
       - dotnet build JackOfAllCodes.sln
-```
