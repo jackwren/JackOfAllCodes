@@ -5,17 +5,9 @@ phases:
       # Install .NET 8 to a specific directory
       - curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 8.0 --install-dir /root/.dotnet
 
-      # Set DOTNET_ROOT to point to the .NET 8 installation directory
-      - export DOTNET_ROOT=/root/.dotnet
-
-      # Add the installed .NET 8 SDK to the PATH
-      - export PATH=/root/.dotnet:/root/.dotnet/tools:$PATH
-
-      # Verify that .NET 8 is being used
-      - dotnet --version
-
   build:
     commands:
-      # Restore and build using .NET 8
-      - dotnet restore JackOfAllCodes.sln
-      - dotnet build JackOfAllCodes.sln
+      # Use the installed .NET 8 SDK explicitly for restore and build
+      - /root/.dotnet/dotnet --version  # Check the correct SDK version
+      - /root/.dotnet/dotnet restore JackOfAllCodes.sln
+      - /root/.dotnet/dotnet build JackOfAllCodes.sln
