@@ -1,33 +1,28 @@
-# Retrieve the DEPLOYMENT_GROUP_ID environment variable from CodeDeploy
-$deploymentGroupId = $env:DEPLOYMENT_GROUP_ID
+# Define source and destination directories
+$sourceDir = "C:\inetpub\wwwroot\app"
+$backupDir = "C:\backup"
 
-# Retrieve the DEPLOYMENT_ID environment variable from CodeDeploy
-$deploymentId = $env:DEPLOYMENT_ID
-
-# Define the base deployment root path for CodeDeploy on Windows
-$baseDeploymentDir = "C:\ProgramData\Amazon\CodeDeploy"
-
-# Construct the full path to the deployment-archive directory dynamically
-$deploymentDir = Join-Path $baseDeploymentDir $deploymentGroupId 
-$deploymentDir = Join-Path $deploymentDir $deploymentId 
-$deploymentArchive = Join-Path $deploymentDir "deployment-archive"
-
-# Log the deployment directory (optional, for debugging purposes)
-Write-Host "Deployment Directory: $deploymentArchive"
-
-# Define the path to the zip file inside the deployment-archive directory
-$zipFile = Join-Path $deploymentArchive "application.zip"
-
-# Check if the zip file exists
-if (Test-Path $zipFile) {
-    # Unzip the application.zip file into the deployment-archive directory
-    Expand-Archive -Path $zipFile -DestinationPath $deploymentArchive -Force
-
-    # Optionally, remove the zip file after extraction
-    Remove-Item $zipFile
-
-    Write-Host "Unzipping completed successfully."
+# Check if backup directory exists, and if so, delete all files and folders inside it
+if (Test-Path $backupDir) {
+    Write-Host "Purging the backup directory..."
+    Get-ChildItem -Path $backupDir -Recurse | Remove-Item -Force -Recurse
+} else {
+    # If the backup directory doesn't exist, create it
+    Write-Host "Backup directory not found, creating it..."
+    New-Item -Path $backupDir -ItemType Directory
 }
-else {
-    Write-Host "Zip file not found in the deployment directory."
+
+# Ensure the source directory exists
+if (Test-Path $sourceDir) {
+    Write-Host "Moving files from $sourceDir to $backupDir..."
+
+    # Move all contents (files and subdirectories) from source to backup directory
+    Get-ChildItem -Path $sourceDir | ForEach-Object {
+        Move-Item -Path $_.FullName -Destination $backupDir
+    }
+
+    Write-Host "Move completed successfully."
+} else {
+    Write-Host "Source directory $sourceDir does not exist."
 }
+
