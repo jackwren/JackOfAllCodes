@@ -18,10 +18,8 @@ phases:
       - echo Preparing artifact...
       - cp appspec.yml ./output/
       - cp -r scripts/ ./output/
-      - echo Packaging the output...
-      - zip -r application.zip ./output/*
 artifacts:
   files:
-    - application.zip
+    - ./output/*
   discard-paths: yes
 
