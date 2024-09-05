@@ -1,11 +1,30 @@
 version: 0.2    
 phases:
-    install:
-        runtime-versions:
-            dotnet: 8.0
+  install:
+    runtime-versions:
+      dotnet: 8.0  # Ensure .NET 8 is installed
+
+    commands:
+      # Install AWS Lambda Tools globally (necessary for dotnet lambda commands)
+      - dotnet tool install -g Amazon.Lambda.Tools
+
+      # Ensure the global tools path is added to the PATH
+      - export PATH="$PATH:/root/.dotnet/tools"
 
   build:
     commands:
-      - dotnet --version  # Check the correct SDK version
+      # Verify the correct .NET version
+      - dotnet --version
+
+      # Restore the solution (this will pull in necessary dependencies)
       - dotnet restore JackOfAllCodes.sln
+
+      # Build the solution targeting .NET 8
       - dotnet build JackOfAllCodes.sln
+
+      # Package the Lambda function for deployment, targeting .NET 8
+      - dotnet lambda package --configuration Release --framework net8.0 --output-package deploy-package.zip
+
+artifacts:
+  files:
+    - deploy-package.zip  # Specify the package output as an artifact
