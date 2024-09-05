@@ -20,6 +20,6 @@ phases:
       - cp -r scripts/ ./output/
 artifacts:
   files:
-    - ./output/*
+    - ./output/**/*
   discard-paths: yes
 
