@@ -1,7 +1,7 @@
 version: 0.0
 os: windows
 files:
-  - source: /source
+  - source: /appspec.yml
     destination: C:\inetpub\wwwroot\app
 hooks:
   AfterInstall:

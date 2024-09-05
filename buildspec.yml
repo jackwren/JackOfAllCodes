@@ -1,57 +1,27 @@
 version: 0.2
+
 phases:
   install:
     runtime-versions:
-      dotnet: 8.0  # Ensure .NET 8 is installed
-
+      dotnet: 8.0  # Use .NET 8 runtime
     commands:
-      # Install AWS Lambda Tools globally (necessary for dotnet lambda commands)
-      - dotnet tool install -g Amazon.Lambda.Tools
-
-      # Ensure the global tools path is added to the PATH
-      - export PATH="$PATH:/root/.dotnet/tools"
-
+      - echo Installing dependencies...
+      - dotnet restore JackOfAllCodes.Web/JackOfAllCodes.Web.csproj
   build:
     commands:
-      # Verify the correct .NET version
-      - dotnet --version
-
-      # Restore the solution
-      - dotnet restore JackOfAllCodes.sln
-
-      # Build the solution targeting .NET 8
-      - dotnet build JackOfAllCodes.sln
-
-      # Navigate to the folder that contains the .csproj file (JackOfAllCodes.Web)
-      - cd JackOfAllCodes.Web
-
-      # Package the Lambda function for deployment, targeting .NET 8
-      - dotnet lambda package --configuration Release --framework net8.0 --output-package ../deploy-package.zip
-
-      # Remove temp-deploy directory if it exists
-      - rm -rf temp-deploy
-      
-      # Create a temporary directory for the deployment package
-      - mkdir temp-deploy
-      - cp ../appspec.yml temp-deploy/
-      - cp -r ../scripts temp-deploy/
-
-      # Add the deploy package to the temporary directory
-      - cp ../deploy-package.zip temp-deploy/
-
-      # Change to the temporary directory
-      - cd temp-deploy
-
-      # Create a new zip file including appspec.yml, scripts, and the deploy package
-      - zip -r deploy-package.zip *
-
-      # Upload the new zip file to AWS S3
-      - aws s3 cp deploy-package.zip s3://web-blog-lv-bk/deploy-package.zip
-
-      # Clean up
-      - cd ..
-      - rm -rf temp-deploy
-
+      - echo Building the .NET project...
+      - dotnet build JackOfAllCodes.Web/JackOfAllCodes.Web.csproj --configuration Release
+      - echo Publishing the .NET project...
+      - dotnet publish JackOfAllCodes.Web/JackOfAllCodes.Web.csproj --configuration Release --output ./output
+  post_build:
+    commands:
+      - echo Preparing artifact...
+      - cp appspec.yml ./output/
+      - cp -r scripts/ ./output/
+      - echo Packaging the output...
+      - zip -r application.zip ./output/*
 artifacts:
   files:
-    - deploy-package.zip  # Specify the package output as an artifact
+    - application.zip
+  discard-paths: yes
+
