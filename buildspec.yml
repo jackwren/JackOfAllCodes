@@ -2,16 +2,17 @@ version: 0.2
 phases:
   install:
     commands:
+      # Uninstall .NET 6
+      - sudo apt-get remove --purge dotnet-sdk-6.0 || true
+      - sudo apt-get autoremove || true
+
       # Install .NET 8 to a specific directory
       - curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 8.0 --install-dir /root/.dotnet
 
-      # Set DOTNET_ROOT to the installation directory to ensure all dotnet commands use .NET 8
-      - export DOTNET_ROOT=/root/.dotnet
-
-      # Add the .NET installation directory to the PATH
+      # Add the installed .NET 8 SDK to the path
       - export PATH=/root/.dotnet:/root/.dotnet/tools:$PATH
-      
-      # Verify the installed .NET SDK version
+
+      # Verify the installed .NET version
       - dotnet --version
 
   build:
