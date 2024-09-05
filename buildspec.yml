@@ -28,6 +28,9 @@ phases:
       # Package the Lambda function for deployment, targeting .NET 8
       - dotnet lambda package --configuration Release --framework net8.0 --output-package ../deploy-package.zip
 
+      # Remove temp-deploy directory if it exists
+      - rm -rf temp-deploy
+      
       # Create a temporary directory for the deployment package
       - mkdir temp-deploy
       - cp ../appspec.yml temp-deploy/
