@@ -22,8 +22,7 @@ phases:
       - zip -r application.zip ./output/*
 artifacts:
   files:
-    - ./output/appspec.yml
-    - ./output/scripts/*.*
-    - ./output/application.zip
+    - ./output/**
+    - ./application.zip
   discard-paths: yes
 
