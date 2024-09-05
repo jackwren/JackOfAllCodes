@@ -2,20 +2,21 @@ version: 0.2
 phases:
   install:
     commands:
-      # Check if yum, dnf, or another package manager is available
-      - which yum || which dnf || which apk || which zypper || echo "No known package manager found"
+      # Remove .NET 6 using yum if it's available
+      - sudo yum remove dotnet-sdk-6.0 || true
+      - sudo yum autoremove || true
 
-  #     # Install .NET 8 to a specific directory
-  #     - curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 8.0 --install-dir /root/.dotnet
+      # Install .NET 8 to a specific directory
+      - curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 8.0 --install-dir /root/.dotnet
 
-  #     # Add the installed .NET 8 SDK to the path
-  #     - export PATH=/root/.dotnet:/root/.dotnet/tools:$PATH
+      # Add the installed .NET 8 SDK to the path
+      - export PATH=/root/.dotnet:/root/.dotnet/tools:$PATH
 
-  #     # Verify the installed .NET version
-  #     - dotnet --version
+      # Verify the installed .NET version
+      - dotnet --version
 
-  # build:
-  #   commands:
-  #     # Restore and build using the correct SDK
-  #     - dotnet restore JackOfAllCodes.sln
-  #     - dotnet build JackOfAllCodes.sln
+  build:
+    commands:
+      # Restore and build using the correct SDK
+      - dotnet restore JackOfAllCodes.sln
+      - dotnet build JackOfAllCodes.sln
