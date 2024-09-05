@@ -16,14 +16,17 @@ phases:
       # Verify the correct .NET version
       - dotnet --version
 
-      # Restore the solution (this will pull in necessary dependencies)
+      # Restore the solution
       - dotnet restore JackOfAllCodes.sln
 
       # Build the solution targeting .NET 8
       - dotnet build JackOfAllCodes.sln
 
+      # Navigate to the folder that contains the .csproj file (JackOfAllCodes.Web)
+      - cd JackOfAllCodes.Web
+
       # Package the Lambda function for deployment, targeting .NET 8
-      - dotnet lambda package --configuration Release --framework net8.0 --output-package deploy-package.zip
+      - dotnet lambda package --configuration Release --framework net8.0 --output-package ../deploy-package.zip
 
 artifacts:
   files:
