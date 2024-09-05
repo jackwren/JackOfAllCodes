@@ -29,7 +29,7 @@ phases:
       - dotnet lambda package --configuration Release --framework net8.0 --output-package ../deploy-package.zip
 
       # Upload zip output to AWS S3
-      - aws s3 cp deploy-package.zip s3://codepipeline-eu-north-1-967377089732/deploy-package.zip
+      - aws s3 cp ../deploy-package.zip s3://codepipeline-eu-north-1-967377089732/deploy-package.zip
 
 artifacts:
   files:
