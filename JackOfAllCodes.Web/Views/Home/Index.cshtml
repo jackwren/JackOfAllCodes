@@ -16,3 +16,48 @@
         </div>
     </div>
 </div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-6 d-flex">
+            @if (Model != null && Model.Tags.Any())
+            {
+                foreach (var tag in Model.Tags)
+                {
+                    <span class="badge bg-dark me-1">@tag.Name</span>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-6">
+            @if (Model != null && Model.BlogPosts.Any())
+            {
+                foreach (var post in Model.BlogPosts)
+                {
+                    <div class="mb-5 bg-light box-shadow p-5">
+                        <img src="@post.FeaturedImageUrl" alt="@post.Heading" class="mb-2 d-block img-fluid" />
+                        <h2 class="mb-4">@post.Heading</h2>
+                        <p class="mb-4">
+                            Author: @post.Author
+                            <br />
+                            Published Date: @post.PublishedDate.ToShortDateString()
+                            <br />
+                        </p>
+                        <p class="mb-4">
+                            @foreach (var item in post.Tag)
+                            {
+                                <span class="badge bg-secondary me-2">@item.Name</span>
+                            }
+                        </p>
+                        <p class="mb-4">@post.ShortDescription</p>
+                        <a class="btn btn-dark" asp-area="" asp-controller="Blogs" asp-action="Index" asp-route-urlHandle="@post.UrlHandle">Read More</a>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

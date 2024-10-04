@@ -9,22 +9,24 @@ namespace JackOfAllCodes.Web.DataAccess
         {
         }
 
-        public DbSet<Tag> tag { get; set; }
+        public DbSet<BlogPost> BlogPost { get; set; }
 
-        // PostgresSQL sets columns to lowercase. Using FluentAPI to map correct properties.
+        public DbSet<Tag> Tag { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Tag>()
-                .Property(t => t.Id)
-                .HasColumnName("id");
+            // Loop through each entity type and set table and column names to lowercase
+            foreach (var entity in modelBuilder.Model.GetEntityTypes())
+            {
+                // Set the table name to lowercase
+                entity.SetTableName(entity.GetTableName().ToLowerInvariant());
 
-            modelBuilder.Entity<Tag>()
-                .Property(t => t.Name)
-                .HasColumnName("name");
-
-            modelBuilder.Entity<Tag>()
-                .Property(t => t.DisplayName)
-                .HasColumnName("displayname");
+                // Set each property column name to lowercase
+                foreach (var property in entity.GetProperties())
+                {
+                    property.SetColumnName(property.Name.ToLowerInvariant());
+                }
+            }
         }
     }
 }

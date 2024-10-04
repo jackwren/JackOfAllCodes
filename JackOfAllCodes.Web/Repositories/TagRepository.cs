@@ -15,18 +15,18 @@ namespace JackOfAllCodes.Web.Repositories
 
         public async Task<Tag> AddAsync(Tag tag)
         {
-            await blogPostDbContext.tag.AddAsync(tag);
+            await blogPostDbContext.Tag.AddAsync(tag);
             await blogPostDbContext.SaveChangesAsync();
             return tag;
         }
 
         public async Task<Tag?> DeleteAsync(Guid id)
         {
-            var data = await blogPostDbContext.tag.FindAsync(id);
+            var data = await blogPostDbContext.Tag.FindAsync(id);
 
             if (data != null)
             {
-                blogPostDbContext.tag.Remove(data);
+                blogPostDbContext.Tag.Remove(data);
                 await blogPostDbContext.SaveChangesAsync();
                 return data;
             }
@@ -38,18 +38,18 @@ namespace JackOfAllCodes.Web.Repositories
 
         public async Task<IEnumerable<Tag>> GetAllAsync()
         {
-            return await blogPostDbContext.tag.ToListAsync();
+            return await blogPostDbContext.Tag.ToListAsync();
         }
 
         public async Task<Tag?> GetAsync(Guid id)
         {
-            return await blogPostDbContext.tag.FirstOrDefaultAsync(x => x.Id == id);
+            return await blogPostDbContext.Tag.FirstOrDefaultAsync(x => x.Id == id);
 
         }
 
         public async Task<Tag?> UpdateAsync(Tag tag)
         {
-            var currentTag = await blogPostDbContext.tag.FindAsync(tag.Id);
+            var currentTag = await blogPostDbContext.Tag.FindAsync(tag.Id);
             if (currentTag != null)
             {
                 currentTag.Name = tag.Name;
