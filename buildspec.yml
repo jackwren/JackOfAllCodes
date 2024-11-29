@@ -17,8 +17,6 @@ phases:
       - dotnet build JackOfAllCodes.UnitTests/JackOfAllCodes.UnitTests.csproj --configuration Release  # Build unit tests project
       - echo Running unit tests...
       - dotnet test JackOfAllCodes.UnitTests/JackOfAllCodes.UnitTests.csproj --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"  # Generate test results in trx format
-      - echo Listing contents of TestResults directory...
-      - ls -R src/JackOfAllCodes.UnitTests/TestResults/  # Verify the test results file is here
 
   post_build:
     commands:
@@ -28,7 +26,7 @@ phases:
       - cp appspec.yml ./output/
       - cp -r scripts/ ./output/
       - echo Copying test results to output directory...
-      - cp src/JackOfAllCodes.UnitTests/TestResults/test_results.trx ./output/  # Copy .trx file to output directory
+      - cp **/JackOfAllCodes.UnitTests/TestResults/test_results.trx ./output/  # Copy .trx file to output directory
 
 artifacts:
   files:
