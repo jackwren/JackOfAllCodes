@@ -14,13 +14,8 @@ builder.Host.UseSerilog((context, loggerConfiguration) =>
 {
     loggerConfiguration
         .Enrich.FromLogContext()
-        .WriteTo.Console(); // Logs to console for local debugging
-
-    if (context.HostingEnvironment.IsDevelopment())
-    {
-        // Write to file only in Development
-        loggerConfiguration.WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day);
-    }
+        .WriteTo.Console() // Logs to console for local debugging
+        .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day);
 
     if (context.HostingEnvironment.IsProduction())
     {
