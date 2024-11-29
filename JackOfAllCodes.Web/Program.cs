@@ -7,6 +7,7 @@ using Serilog;
 using Serilog.Sinks.AwsCloudWatch;
 using Amazon.CloudWatchLogs;
 using JackOfAllCodes.Web.Middleware;
+using JackOfAllCodes.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,6 +90,7 @@ try
     // Inject repositories
     builder.Services.AddScoped<ITagRepository, TagRepository>();
     builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
+    builder.Services.AddScoped<IFileSystemService, FileSystemService>();
 
     var app = builder.Build();
 
