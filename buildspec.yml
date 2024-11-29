@@ -25,6 +25,7 @@ phases:
       - echo Preparing artifact...
       - cp appspec.yml ./output/
       - cp -r scripts/ ./output/
+      - cp test_results.trx ./output/  # Copy test results to output directory
 
 artifacts:
   files:
@@ -35,6 +36,6 @@ artifacts:
 reports:
   test-reports:
     files:
-      - test_results.trx  # Location of the test results file
-    base-directory: .  # The directory to look for the test result file
+      - output/test_results.trx  # Location of the test results file in the output directory
+    base-directory: ./output/  # The directory to look for the test result file
     name: UnitTestResults  # The name of the test report
