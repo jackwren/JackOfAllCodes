@@ -7,19 +7,34 @@ phases:
     commands:
       - echo Installing dependencies...
       - dotnet restore JackOfAllCodes.Web/JackOfAllCodes.Web.csproj
+      - dotnet restore JackOfAllCodes.UnitTests/JackOfAllCodes.UnitTests.csproj  # Restore unit test dependencies
+
   build:
     commands:
       - echo Building the .NET project...
       - dotnet build JackOfAllCodes.Web/JackOfAllCodes.Web.csproj --configuration Release
-      - echo Publishing the .NET project...
-      - dotnet publish JackOfAllCodes.Web/JackOfAllCodes.Web.csproj --configuration Release --output ./output
+      - echo Building unit tests...
+      - dotnet build JackOfAllCodes.UnitTests/JackOfAllCodes.UnitTests.csproj --configuration Release  # Build unit tests project
+      - echo Running unit tests...
+      - dotnet test JackOfAllCodes.UnitTests/JackOfAllCodes.UnitTests.csproj --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"  # Generate test results in trx format
+
   post_build:
     commands:
+      - echo Publishing the .NET project...
+      - dotnet publish JackOfAllCodes.Web/JackOfAllCodes.Web.csproj --configuration Release --output ./output
       - echo Preparing artifact...
       - cp appspec.yml ./output/
       - cp -r scripts/ ./output/
+
 artifacts:
   files:
-    - ./output/**/*.*
+    - ./output/**/*.*  # Include all files from the output directory
+    - test_results.trx  # Include the test results in the artifacts
   discard-paths: no
 
+reports:
+  test-reports:
+    files:
+      - test_results.trx  # Location of the test results file
+    base-directory: .  # The directory to look for the test result file
+    name: UnitTestResults  # The name of the test report
