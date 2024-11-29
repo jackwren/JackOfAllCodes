@@ -20,19 +20,19 @@ builder.Host.UseSerilog((context, loggerConfiguration) =>
     if (context.HostingEnvironment.IsProduction())
     {
         // Create AWS CloudWatch Logs client
-        var cloudWatchClient = new AmazonCloudWatchLogsClient();
+        //var cloudWatchClient = new AmazonCloudWatchLogsClient();
 
-        // Configure CloudWatch logging for production
-        var cloudWatchOptions = new CloudWatchSinkOptions
-        {
-            LogGroupName = "JackOfAllCodesWeb", // CloudWatch Log Group Name
-            MinimumLogEventLevel = Serilog.Events.LogEventLevel.Information, 
-            LogStreamNameProvider = new DefaultLogStreamProvider(), 
-            CreateLogGroup = true // Automatically creates log group if it doesn't exist
-        };
+        //// Configure CloudWatch logging for production
+        //var cloudWatchOptions = new CloudWatchSinkOptions
+        //{
+        //    LogGroupName = "JackOfAllCodesWeb", // CloudWatch Log Group Name
+        //    MinimumLogEventLevel = Serilog.Events.LogEventLevel.Information, 
+        //    LogStreamNameProvider = new DefaultLogStreamProvider(), 
+        //    CreateLogGroup = true // Automatically creates log group if it doesn't exist
+        //};
 
-        // Add CloudWatch sink
-        loggerConfiguration.WriteTo.AmazonCloudWatch(cloudWatchOptions, cloudWatchClient);
+        //// Add CloudWatch sink
+        //loggerConfiguration.WriteTo.AmazonCloudWatch(cloudWatchOptions, cloudWatchClient);
     }
     else
     {
