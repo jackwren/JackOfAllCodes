@@ -25,8 +25,7 @@ phases:
       - echo Preparing artifact...
       - cp appspec.yml ./output/
       - cp -r scripts/ ./output/
-      - echo Copying test results to output directory...
-      - cp **/JackOfAllCodes.UnitTests/TestResults/test_results.trx ./output/  # Copy .trx file to output directory
+      - cp src/JackOfAllCodes.UnitTests/TestResults/test_results.trx ./output/  # Copy .trx file to output directory
 
 artifacts:
   files:
