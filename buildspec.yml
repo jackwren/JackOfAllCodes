@@ -17,6 +17,8 @@ phases:
       - dotnet build JackOfAllCodes.UnitTests/JackOfAllCodes.UnitTests.csproj --configuration Release  # Build unit tests project
       - echo Running unit tests...
       - dotnet test JackOfAllCodes.UnitTests/JackOfAllCodes.UnitTests.csproj --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"  # Generate test results in trx format
+      - echo Listing contents of TestResults directory...
+      - ls -R src/JackOfAllCodes.UnitTests/TestResults/  # Verify the test results file is here
 
   post_build:
     commands:
@@ -25,16 +27,16 @@ phases:
       - echo Preparing artifact...
       - cp appspec.yml ./output/
       - cp -r scripts/ ./output/
+      - echo Copying test results to output directory...
+      - cp src/JackOfAllCodes.UnitTests/TestResults/test_results.trx ./output/  # Copy .trx file to output directory
 
 artifacts:
   files:
     - ./output/**/*.*  # Include all files from the output directory
-    - '**/src/JackOfAllCodes.UnitTests/TestResults/test_results.trx'  # Include the unit test results
   discard-paths: no
 
 reports:
   test-reports:
     files:
-      - '**/src/JackOfAllCodes.UnitTests/TestResults/test_results.trx'  # Correct location of the test results file
+      - './output/test_results.trx'  # Ensure this matches the actual path of the .trx file in the output directory
     name: JackOfAllCodes.UnitTestsResults  # The name of the test report
-
