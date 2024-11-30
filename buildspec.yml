@@ -35,5 +35,7 @@ artifacts:
 reports:
   test-reports:
     files:
-      - './output/test_results.trx'  # Ensure this matches the actual path of the .trx file in the output directory
-    name: JackOfAllCodes.UnitTestsResults  # The name of the test report
+      - 'test_results.trx'  # File name only; base-directory will handle the path
+    base-directory: ./output  # Directory where TRX file is located
+    name: JackOfAllCodes.UnitTestsResults  # Name of the test report
+
