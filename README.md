@@ -41,7 +41,6 @@ After cloning or downloading the sample you need to have installed and setup the
 
 1. Ensure your connection strings in ```appsettings.json``` point to a local SQL Server instance.
 
-
 ### Structure of Project
 ## TO ADD
 
@@ -49,7 +48,6 @@ After cloning or downloading the sample you need to have installed and setup the
 
 * This repository is not intended to be a definitive solution.
 * This repository not implemented a lot of 3rd party packages, we are try to avoid the over engineering when building on best practices.
-* Beware to use in production way.
 
 ## Contributing
 
@@ -57,7 +55,7 @@ Please read [Contributing.md]() for details on our code of conduct, and the proc
 
 ## Deployment - AspnetRun Online
 
-This project is deployed on AWS. See the project running on AWS in [here](https://eu-north-1.console.aws.amazon.com/codesuite/codepipeline/home?region=eu-north-1).
+This project is deployed via AWS.
 
 ## Authors
 
