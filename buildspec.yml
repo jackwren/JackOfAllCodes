@@ -25,7 +25,7 @@ phases:
       - echo Preparing artifact...
       - cp appspec.yml ./output/
       - cp -r scripts/ ./output/
-      - cp JackOfAllCodes.UnitTests/TestResults/test_results.trx ./output/TestResults/
+      - cp JackOfAllCodes.UnitTests/TestResults/test_results.trx ./output/
 
 artifacts:
   files:
@@ -35,5 +35,5 @@ artifacts:
 reports:
   test-reports:
     files:
-      - './output/TestResults/test_results.trx'  # Ensure this matches the actual path of the .trx file in the output directory
+      - './output/test_results.trx'  # Ensure this matches the actual path of the .trx file in the output directory
     name: JackOfAllCodes.UnitTestsResults  # The name of the test report
