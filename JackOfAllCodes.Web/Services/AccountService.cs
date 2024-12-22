@@ -41,12 +41,15 @@ namespace JackOfAllCodes.Web.Services
             var result = await _userManager.CreateAsync(user, request.Password);
 
             // Apply user to Role.
-            var roleExists = await _roleManager.RoleExistsAsync("User");
-            if (!roleExists)
+            if (result.Succeeded)
             {
-                await _roleManager.CreateAsync(new IdentityRole("User"));
+                var roleExists = await _roleManager.RoleExistsAsync("User");
+                if (!roleExists)
+                {
+                    await _roleManager.CreateAsync(new IdentityRole("User"));
+                }
+                await _userManager.AddToRoleAsync(user, "User");
             }
-            await _userManager.AddToRoleAsync(user, "User");
 
             if (!result.Succeeded)
             {
