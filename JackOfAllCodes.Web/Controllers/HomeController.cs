@@ -33,6 +33,11 @@ namespace JackOfAllCodes.Web.Controllers
             return View(model);
         }
 
+        public IActionResult About()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

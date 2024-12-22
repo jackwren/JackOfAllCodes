@@ -1,11 +1,13 @@
 ﻿using JackOfAllCodes.Web.Models.Domain;
 using JackOfAllCodes.Web.Models.ViewModels;
 using JackOfAllCodes.Web.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace JackOfAllCodes.Web.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminPostsController : Controller
     {
         private readonly ITagRepository tagRepository;

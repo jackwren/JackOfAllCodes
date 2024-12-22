@@ -1,0 +1,37 @@
+﻿@model Microsoft.AspNetCore.Identity.Data.RegisterRequest
+
+@{
+    ViewData["Title"] = "Register";
+}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="text-center mb-4">Register</h2>
+
+            <form method="post" asp-controller="Account" asp-action="Register">
+                <div class="mb-3">
+                    <label for="Email" class="form-label">Email</label>
+                    <input type="email" id="Email" name="Email" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="Password" class="form-label">
+                        Password
+                        <span class="info-icon">
+                            ℹ
+                            <span class="tooltip-text">
+                                Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character.
+                            </span>
+                        </span>
+                    </label>
+                    <input asp-for="Password" type="password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Register</button>
+            </form>
+
+            <p class="text-center mt-3">Already have an account? <a href="@Url.Action("Login", "Account")">Login here</a></p>
+        </div>
+    </div>
+</div>

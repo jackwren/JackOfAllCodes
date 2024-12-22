@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="~/images/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="~/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="~/images/favicon/favicon-16x16.png">
+
     <!-- Froala Editor CSS -->
     <link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
 
@@ -22,7 +27,19 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
                 ☰
             </button>
+            <!-- Page Title/Header-->
             <a class="header-title text-light" asp-area="" asp-controller="Home" asp-action="Index">JackOfAllCodes</a>
+            <!-- Conditional Login / Logout Button -->
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <a href="@Url.Action("Profile", "Account")" class="btn btn-outline-light ms-2">Profile</a>
+                <a href="@Url.Action("Logout", "Account")" class="btn btn-outline-light ms-2">Sign Out</a>
+            }
+            else
+            {
+                <a href="@Url.Action("Login", "Account")" class="btn btn-outline-light ms-2">Sign In</a>
+                <a href="@Url.Action("Register", "Account")" class="btn btn-outline-light ms-2">Register</a>
+            }
         </div>
     </header>
 
@@ -38,23 +55,37 @@
                     <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">About</a>
+                    <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="About">About Me</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Contact</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        Admin
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-dark">
-                        <li><a class="dropdown-item" asp-area="" asp-controller="AdminTags" asp-action="Add">Add Tag</a></li>
-                        <li><a class="dropdown-item" asp-area="" asp-controller="AdminTags" asp-action="List">View Tags</a></li>
-                        <li><a class="dropdown-item" asp-area="" asp-controller="AdminPosts" asp-action="Add">Add Post</a></li>
-                        <li><a class="dropdown-item" asp-area="" asp-controller="AdminPosts" asp-action="List">View Posts</a></li>
-                    </ul>
-                </li>
+       
+                @if (User.IsInRole("Admin"))
+                {
+                    <li class="nav-item dropdown">
+                        <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            Admin
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a class="dropdown-item" asp-area="" asp-controller="AdminTags" asp-action="Add">Add Tag</a></li>
+                            <li><a class="dropdown-item" asp-area="" asp-controller="AdminTags" asp-action="List">View Tags</a></li>
+                            <li><a class="dropdown-item" asp-area="" asp-controller="AdminPosts" asp-action="Add">Add Post</a></li>
+                            <li><a class="dropdown-item" asp-area="" asp-controller="AdminPosts" asp-action="List">View Posts</a></li>
+                        </ul>
+                    </li>
+                }
             </ul>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="errorToast" class="toast bg-danger text-white" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Error</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                @ViewData["ErrorMessage"]
+            </div>
         </div>
     </div>
 
@@ -68,7 +99,7 @@
     <!-- Footer -->
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2024 - BlogExample.Web - <a asp-area="" asp-controller="Home" asp-action="Index">Contact</a>
+            &copy; 2024 - JackOfAllCodes
         </div>
     </footer>
 
@@ -76,6 +107,15 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var errorMessage = "@ViewData["ErrorMessage"]";
+            if (errorMessage) {
+                var toast = new bootstrap.Toast(document.getElementById('errorToast'));
+                toast.show();
+            }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

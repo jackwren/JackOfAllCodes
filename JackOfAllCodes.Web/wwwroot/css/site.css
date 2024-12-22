@@ -1,3 +1,4 @@
+/* Base font size */
 html {
     font-size: 14px;
 }
@@ -8,10 +9,16 @@ html {
     }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+/* Focus and active styles for interactive elements */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #d32f2f; /* Red focus ring */
 }
 
+/* Body setup */
 html {
     position: relative;
     min-height: 100%;
@@ -19,23 +26,199 @@ html {
 
 body {
     margin-bottom: 60px;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4; /* Subtle background color */
+    color: #333; /* Dark text for better contrast */
 }
 
+/* Header Section */
 .header {
     padding: 1rem;
-    background-color: #f8f9fa;
+    background-color: #d32f2f; /* Red background for header */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 2px solid #b71c1c; /* Darker red border for header */
 }
 
+/* Header Title */
 .header-title {
+    padding: 1rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-right: auto;
+    color: white; /* White text for title */
+}
+
+/* Navbar Toggler */
+.navbar-toggler {
+    border: none;
+    font-size: 1.5rem;
+    color: white; /* White icon */
+}
+
+/* Tooltip */
+.info-icon {
+    position: relative;
+    cursor: pointer;
+    color: #007bff; /* Blue color for info icon */
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    width: 250px;
+    background-color: #fff;
+    color: #212529;
+    text-align: left;
+    padding: 10px;
+    border-radius: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 12px;
+}
+
+.info-icon:hover .tooltip-text {
+    visibility: visible;
+}
+
+/* Navbar Styling */
+.navbar {
+    background-color: #d32f2f; /* Red background for navbar */
+    border-bottom: 2px solid #b71c1c; /* Darker red border */
+}
+
+.navbar-brand {
+    color: white;
     font-size: 1.5rem;
     font-weight: bold;
 }
 
-.navbar-toggler {
-    border: none;
-    font-size: 1.5rem;
+.navbar-nav .nav-link {
+    color: white;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    padding: 10px 15px;
+}
+
+    .navbar-nav .nav-link:hover {
+        background-color: #b71c1c; /* Darker red hover effect */
+        color: white;
+        border-radius: 5px;
+    }
+
+.navbar-nav .nav-item.active .nav-link {
+    background-color: #b71c1c; /* Active link background */
+    color: white;
+}
+
+/* Login/Logout Button */
+.btn-outline-light {
+    border-color: white;
+    color: white;
+}
+
+.btn-outline-light:hover {
+    background-color: #d32f2f; /* Red hover effect */
+    color: white;
+    border-color: #d32f2f; /* Match the border with the red background */
+}
+
+/* Custom Favicon styling */
+.navbar-brand img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+/* Responsive Design for Mobile */
+@media (max-width: 768px) {
+    .navbar-nav {
+        flex-direction: column;
+    }
+}
+
+/* Utility Classes */
+.text-red {
+    color: #d32f2f; /* Apply red everywhere */
+}
+
+.bg-red {
+    background-color: #d32f2f; /* Apply red background */
+}
+
+.hover-red:hover {
+    color: #d32f2f; /* Red hover color */
+}
+
+/* Styling for containers and sections */
+.container {
+    padding: 20px;
+}
+
+.section-header {
+    color: #d32f2f; /* Red header */
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+/* Custom LinkedIn Button */
+.btn-linkedin {
+    background-color: #0077b5; /* LinkedIn Blue */
+    color: white;
+    border: 2px solid #0077b5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 50px;
+}
+
+    .btn-linkedin:hover {
+        background-color: #d32f2f; /* Darker LinkedIn Blue on hover */
+        border-color: #d32f2f;
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-linkedin .btn-icon {
+        width: 25px;
+        margin-right: 10px;
+    }
+
+/* Custom GitHub Button */
+.btn-github {
+    background-color: #333; /* GitHub Dark Grey */
+    color: white;
+    border: 2px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 50px;
+}
+
+    .btn-github:hover {
+        background-color: #d32f2f; /* Darker GitHub Grey on hover */
+        border-color: #d32f2f;
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-github .btn-icon {
+        width: 25px;
+        margin-right: 10px;
+    }
+
+
+/* Footer Styling (non-fixed version) */
+footer {
+    text-align: center;
 }

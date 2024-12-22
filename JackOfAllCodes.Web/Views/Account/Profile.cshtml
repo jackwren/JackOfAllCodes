@@ -1,0 +1,18 @@
+﻿@model Microsoft.AspNetCore.Identity.IdentityUser
+
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="text-center mb-4">Your Profile</h2>
+
+            <div class="mb-3">
+                <label for="Email" class="form-label">Email:</label>
+                <p class="form-control-plaintext">@(Model.Email ?? "No email set")</p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -8,6 +8,9 @@ using Serilog.Sinks.AwsCloudWatch;
 using Amazon.CloudWatchLogs;
 using JackOfAllCodes.Web.Middleware;
 using JackOfAllCodes.Web.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using JackOfAllCodes.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,87 +44,137 @@ builder.Host.UseSerilog((context, loggerConfiguration) =>
     }
 });
 
-try
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+
+// Check if the environment is production
+if (builder.Environment.IsProduction())
 {
-    Log.Information("Starting the application");
+    Log.Information("Environment is Production. Loading DB connection string from AWS Parameter Store.");
 
-    // Add services to the container.
-    builder.Services.AddControllersWithViews();
+    // Load connection string from AWS Parameter Store
+    var ssmClient = new AmazonSimpleSystemsManagementClient();
 
-    // Check if the environment is production
-    if (builder.Environment.IsProduction())
+    // Define the paths for the connection strings in AWS Parameter Store
+    var blogPostDbParameterPath = "/production/jackofallcodes.web/ConnectionStrings/BlogPostDbConnectionString";
+    var authDbParameterPath = "/production/jackofallcodes.web/ConnectionStrings/AuthDbConnectionString";
+
+    var blogPostDbConnectionString = string.Empty;
+    var authDbConnectionString = string.Empty;
+
+    try
     {
-        Log.Information("Environment is Production. Loading DB connection string from AWS Parameter Store.");
-
-        // Load connection string from AWS Parameter Store
-        var ssmClient = new AmazonSimpleSystemsManagementClient();
-        var parameterPath = "/production/jackofallcodes.web/ConnectionStrings/BlogPostDbConnectionString";
-
-        var parameterRequest = new GetParameterRequest
+        // Fetch the BlogPost DB connection string from Parameter Store
+        var blogPostResponse = ssmClient.GetParameterAsync(new GetParameterRequest
         {
-            Name = parameterPath,
+            Name = blogPostDbParameterPath,
             WithDecryption = true
-        };
+        }).Result;
 
-        try
+        blogPostDbConnectionString = blogPostResponse.Parameter.Value;
+
+        // Fetch the Auth DB connection string from Parameter Store
+        var authResponse = ssmClient.GetParameterAsync(new GetParameterRequest
         {
-            var response = ssmClient.GetParameterAsync(parameterRequest).Result;
-            var dbConnectionString = response.Parameter.Value;
+            Name = authDbParameterPath,
+            WithDecryption = true
+        }).Result;
 
-            // Set the connection string dynamically from AWS Parameter Store
-            builder.Services.AddDbContext<BlogPostDBContext>(options =>
-                options.UseNpgsql(dbConnectionString));
-        }
-        catch (Exception ex)
-        {
-            Log.Fatal(ex, "Failed to load DB connection string from AWS Parameter Store.");
-            throw;
-        }
-    }
-    else
-    {
-        Log.Information("Environment is Development. Loading DB connection string from appsettings.json.");
+        authDbConnectionString = authResponse.Parameter.Value;
 
-        // Use the connection string from appsettings.json for non-production environments
+        // Configure BlogPostDbContext with BlogPost connection string
         builder.Services.AddDbContext<BlogPostDBContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("BlogPostDbConnectionString")));
+            options.UseNpgsql(blogPostDbConnectionString));
+
+        // Configure ApplicationDbContext with Auth connection string
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql(authDbConnectionString));
+
     }
-
-    // Inject repositories
-    builder.Services.AddScoped<ITagRepository, TagRepository>();
-    builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
-    builder.Services.AddScoped<IFileSystemService, FileSystemService>();
-
-    var app = builder.Build();
-
-    // Configure the HTTP request pipeline.
-    if (!app.Environment.IsDevelopment())
+    catch (Exception ex)
     {
-        app.UseExceptionHandler("/Home/Error");
-        app.UseHsts();
+        Log.Fatal(ex, "Failed to load DB connection string from AWS Parameter Store.");
+        throw;
+    }
+}
+else
+{
+    Log.Information("Environment is Development. Loading DB connection string from appsettings.json.");
+
+    // BlogPost DB
+    builder.Services.AddDbContext<BlogPostDBContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("BlogPostDbConnectionString")));
+
+    // ApplicationDbContext for Identity (Auth DB connection string)
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(builder.Configuration.GetConnectionString("AuthDbConnectionString")));
+}
+
+// Register Identity services
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+    {
+        options.Password.RequiredLength = 8;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireDigit = true;
+    })
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
+
+// Inject repositories
+builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
+builder.Services.AddScoped<IFileSystemService, FileSystemService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+
+// Add cookie authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";  // Redirect to Login if not authenticated
+        options.LogoutPath = "/Account/Logout";  // Redirect to Logout
+        options.AccessDeniedPath = "/Account/AccessDenied";  // Optional
+    });
+
+var app = builder.Build();
+
+// Apply migrations automatically on app start
+if (app.Environment.IsDevelopment())
+{
+    // Apply migrations for ApplicationDbContext (Identity)
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var applicationDbContext = services.GetRequiredService<ApplicationDbContext>();
+        applicationDbContext.Database.Migrate();  // This will apply any pending migrations for Identity DB
     }
 
-    app.UseHttpsRedirection();
-    app.UseStaticFiles();
-
-    app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
-
-    app.UseRouting();
-
-    app.UseAuthorization();
-
-    app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}");
-
-    app.Run();
+    // Apply migrations for BlogPostDbContext
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var blogPostDbContext = services.GetRequiredService<BlogPostDBContext>();
+        blogPostDbContext.Database.Migrate();  // This will apply any pending migrations for BlogPost DB
+    }
 }
-catch (Exception ex)
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
 {
-    Log.Fatal(ex, "Application terminated unexpectedly.");
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
 }
-finally
-{
-    Log.Information("Shutting down application");
-    Log.CloseAndFlush();
-}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();

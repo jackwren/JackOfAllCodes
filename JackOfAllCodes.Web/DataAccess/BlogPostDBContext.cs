@@ -5,7 +5,7 @@ namespace JackOfAllCodes.Web.DataAccess
 {
     public class BlogPostDBContext : DbContext
     {
-        public BlogPostDBContext(DbContextOptions options) : base(options)
+        public BlogPostDBContext(DbContextOptions<BlogPostDBContext> options) : base(options)
         {
         }
 
