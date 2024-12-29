@@ -20,7 +20,7 @@ namespace JackOfAllCodes.Web.Controllers
             if (formFile == null || formFile.Length == 0)
                 return BadRequest("No file uploaded.");
 
-            var filePath = Path.Combine(_fileSystem.GetCurrentDirectory(), "wwwroot/images", formFile.FileName);
+            var filePath = Path.Combine(_fileSystem.GetCurrentDirectory(), "wwwroot/images/blogs", formFile.FileName);
             var directory = Path.GetDirectoryName(filePath);
 
             if (!_fileSystem.DirectoryExists(directory))
@@ -33,7 +33,7 @@ namespace JackOfAllCodes.Web.Controllers
                 await formFile.CopyToAsync(stream);
             }
 
-            var fileUrl = $"/images/{formFile.FileName}";
+            var fileUrl = $"/images/blogs/{formFile.FileName}";
             return Ok(new { link = fileUrl });
         }
     }

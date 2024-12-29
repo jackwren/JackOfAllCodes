@@ -45,7 +45,7 @@ namespace JackOfAllCodes.Web.Controllers
                 ShortDescription = addPostRequest.ShortDescription,
                 FeaturedImageUrl = addPostRequest.FeaturedImageUrl,
                 UrlHandle = addPostRequest.UrlHandle,
-                PublishedDate = addPostRequest.PublishedDate.ToUniversalTime(),
+                PublishedDate = DateTime.SpecifyKind(addPostRequest.PublishedDate.ToUniversalTime(), DateTimeKind.Utc),
                 Author = addPostRequest.Author,
                 Visible = addPostRequest.Visible
                 //Does not include tags selected. Have mapped those below
@@ -75,7 +75,6 @@ namespace JackOfAllCodes.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> List()
         {
-
             //Call the repository to gather Data from DB
             var blogPosts = await blogPostRepository.GetAllAsync();
 
@@ -133,7 +132,7 @@ namespace JackOfAllCodes.Web.Controllers
                 ShortDescription = editBlogPostRequest.ShortDescription,
                 FeaturedImageUrl = editBlogPostRequest.FeaturedImageUrl,
                 UrlHandle = editBlogPostRequest.UrlHandle,
-                PublishedDate = editBlogPostRequest.PublishedDate,
+                PublishedDate = DateTime.SpecifyKind(editBlogPostRequest.PublishedDate.ToUniversalTime(), DateTimeKind.Utc),
                 Author = editBlogPostRequest.Author,
                 Visible = editBlogPostRequest.Visible
             };

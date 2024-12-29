@@ -26,7 +26,8 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">Content</label>
-                <textarea class="form-control" id="content" asp-for="Content"></textarea>
+                <div id="content-editor" style="height: 300px; border: 1px solid #ced4da;"></div>
+                <textarea class="form-control d-none" id="content" asp-for="Content"></textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label">ShortDescription</label>
@@ -54,8 +55,9 @@
                 <input type="text" class="form-control" id="urlHandle" asp-for="UrlHandle" />
             </div>
             <div class="mb-3">
-                <label class="form-label">Published Data</label>
-                <input type="date" class="form-control" id="publishedDate" asp-for="PublishedDate" />
+                <label class="form-label">Published Date</label>
+                <input type="date" class="form-control" id="publishedDate" asp-for="PublishedDate"
+                       value="@Model.PublishedDate.ToString("yyyy-MM-dd")" readonly />
             </div>
             <div class="mb-3">
                 <label class="form-label">Author</label>
@@ -86,8 +88,85 @@
 </div>
 
 @section Scripts {
+    <!-- Quill JS -->
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+
     <script>
-        var editor = new FroalaEditor('#content');
+        // Initialize Quill editor
+        var quill = new Quill('#content-editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+                    ['blockquote', 'code-block'],
+
+                    [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
+                    [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
+                    [{ 'direction': 'rtl' }],                         // text direction
+
+                    [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+                    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+                    [{ 'font': [] }],
+                    [{ 'align': [] }],
+
+                    ['clean'],                                         // remove formatting
+                    ['link', 'image']                                 // add link and image
+                ],
+                imageResize: {                                       // Enable the image resize module
+                    modules: ['Resize', 'DisplaySize', 'Toolbar']
+                }
+            }
+        });
+
+        // Set the initial content from the server-side model
+        const initialContent = `@Html.Raw(Model.Content)`;
+        quill.root.innerHTML = initialContent;
+
+        // Sync Quill content with the hidden textarea on form submission
+        const form = document.querySelector('form');
+        const contentInput = document.getElementById('content');
+        form.addEventListener('submit', function () {
+            contentInput.value = quill.root.innerHTML;
+        });
+
+        // Custom image upload handler for Quill editor
+        quill.getModule('toolbar').addHandler('image', function () {
+            var fileInput = document.createElement('input');
+            fileInput.setAttribute('type', 'file');
+            fileInput.accept = 'image/*';
+            fileInput.click();
+
+            fileInput.onchange = async function () {
+                var file = fileInput.files[0];
+                if (!file) return;
+
+                // Create FormData and append the selected file
+                var formData = new FormData();
+                formData.append('formFile', file);
+
+                // Send the file to the server for upload
+                const response = await fetch('/api/images', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Insert the uploaded image URL into the editor
+                    const range = quill.getSelection();
+                    quill.insertEmbed(range.index, 'image', result.link);
+                } else {
+                    alert('Error uploading image');
+                }
+            };
+        });
 
         const featuredUploadElement = document.getElementById('featuredImageUpload');
         const featuredImageUrlElement = document.getElementById('featuredImageUrl');

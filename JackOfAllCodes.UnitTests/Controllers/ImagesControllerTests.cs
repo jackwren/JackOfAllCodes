@@ -33,7 +33,7 @@ namespace JackOfAllCodes.UnitTests.Controllers
 
             // Set up the mock IFileSystem to simulate GetCurrentDirectory and DirectoryExists
             var tempDir = Path.Combine(Path.GetTempPath(), "images"); // Temporary directory for image uploads
-            var imagesDir = Path.Combine(tempDir, "wwwroot", "images"); // Final target directory
+            var imagesDir = Path.Combine(tempDir, "wwwroot", "images", "blogs"); // Final target directory
 
             if (!Directory.Exists(imagesDir))
             {
