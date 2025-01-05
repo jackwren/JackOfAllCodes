@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using RegisterRequest = JackOfAllCodes.Web.Models.ViewModels.RegisterRequest;
 
 public class AccountController : Controller
 {

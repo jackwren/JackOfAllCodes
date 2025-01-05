@@ -9,10 +9,26 @@
         <div class="col-md-6">
             <h2 class="text-center mb-4">Your Profile</h2>
 
+            @* <div class="mb-3">
+                <label for="Profile Picture" class="form-label">Profile Picture:</label>
+                <p class="form-control-plaintext">@(Model.UserName ?? "No username set")</p>
+            </div> *@
+            <div class="mb-3">
+                <label for="text" class="form-label">Username:</label>
+                <p class="form-control-plaintext">@(Model.UserName ?? "No username set")</p>
+            </div>
             <div class="mb-3">
                 <label for="Email" class="form-label">Email:</label>
                 <p class="form-control-plaintext">@(Model.Email ?? "No email set")</p>
             </div>
+            @* <div class="mb-3">
+                <label for="text" class="form-label">Reset password?</label>
+                <p class="form-control-plaintext">@(Model.UserName ?? "No username set")</p>
+            </div> *@
+            @* <div class="mb-3">
+                <label for="text" class="form-label">Job Title:</label>
+                <p class="form-control-plaintext">@(Model.JobTitle ?? "No job title set")</p>
+            </div> *@
         </div>
     </div>
 </div>

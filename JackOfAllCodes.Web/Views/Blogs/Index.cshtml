@@ -5,34 +5,109 @@
 
 <div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-12 col-lg-6">
+        <div class="col-12 col-lg-8">
 
             @if (Model != null)
             {
-                <h1 class="mb-3">
-                    @Model.Heading
-                </h1>
-                <div class="d-flex justify-content-between">
-                    <span class="test-secondary">@Model.Author</span>
-                    <span class="test-secondary">@Model.PublishedDate.ToShortDateString()</span>
+                <div class="blog-post border rounded shadow-sm p-4 bg-white">
+                    <h1 class="mb-3 text-red">@Model.Heading</h1>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-secondary small">By <strong>@Model.Author</strong></span>
+                        <span class="text-secondary small">@Model.PublishedDate.ToString("MMM dd, yyyy")</span>
+                    </div>
+
+                    <div class="mb-3">
+                        @foreach (var item in Model.Tag)
+                        {
+                            <span class="badge bg-secondary me-2">#@item.Name</span>
+                        }
+                    </div>
+
+                    <img src="@Model.FeaturedImageUrl" class="img-fluid rounded mb-4" alt="Blog Image" />
+
+                    <div class="blog-details-content mb-4" style="line-height: 1.6;">
+                        @Html.Raw(Model.Content)
+                    </div>
+
+                    <!-- Like Button Section -->
+                    <div class="d-flex align-items-center mb-4">
+                        <form asp-action="LikePost" asp-route-blogPostId="@Model.Id" method="post">
+                            <button type="submit" class="btn btn-outline-dark me-3">
+                                <i class="bi bi-hand-thumbs-up"></i> Like
+                            </button>
+                        </form>
+                        <span class="badge bg-red text-white">Likes: @(Model.Likes?.Count() ?? 0)</span>
+                    </div>
                 </div>
 
-                <div class="mb-3 d-flex">
-                    @foreach (var item in Model.Tag)
-                    {
-                        <span class="badge bg-secondary me-2">@item.Name</span>
-                    }
-                </div>
+                <!-- Comments Section -->
+                <div class="comments-section mt-5">
+                    <h3 class="text-secondary mb-4">Comments</h3>
+                    <div class="comment-list">
+                        @if (Model.Comments != null && Model.Comments.Any())
+                        {
+                            @foreach (var comment in Model.Comments.OrderByDescending(x => x.CreatedDate))
+                            {
+                                <div class="comment bg-light rounded p-3 mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="fw-bold text-dark">@comment.UserName</span>
+                                        <span class="text-muted small">@comment.CreatedDate.ToString("g")</span>
+                                    </div>
+                                    <p class="mt-2">@comment.Content</p>
+                                    <div class="d-flex align-items-center mt-2">
+                                        <form asp-action="LikeComment" asp-route-blogPostId="@Model.Id" asp-route-commentId="@comment.Id" method="post">
+                                            <button type="submit" class="btn btn-sm btn-outline-dark me-2">
+                                                <i class="bi bi-hand-thumbs-up"></i> Like
+                                            </button>
+                                        </form>
+                                        <span class="badge bg-red text-white">Likes: @(comment.Likes?.Count(x => x.Comment.Id == comment.Id) ?? 0)</span>
+                                        
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <form asp-action="DeleteComment" asp-route-blogPostId="@Model.Id" asp-route-commentId="@comment.Id" method="post" class="ms-2">
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="bi bi-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted">No Comments found!</p>
+                        }
+                    </div>
 
-                <img src="@Model.FeaturedImageUrl" class="d-block img-fluid mb-3" />
-
-                <div class="mb-3 blog-details-content">
-                    @Html.Raw(Model.Content)
+                    <!-- Add a New Comment -->
+                    <div class="add-comment mt-4">
+                        <h4 class="text-secondary">Add a Comment</h4>
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <form asp-action="AddComment" method="post">
+                                <div class="mb-3">
+                                    <textarea name="commentContent" class="form-control" rows="4" placeholder="Write your comment here..." required></textarea>
+                                </div>
+                                <input type="hidden" name="blogPostId" value="@Model.Id" />
+                                <button type="submit" class="btn btn-primary">
+                                    Post Comment
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <p class="text-muted">You must be logged in to post a comment.</p>
+                        }
+                    </div>
                 </div>
             }
             else
             {
-                <p>Blog post not found!</p>
+                <div class="text-center p-5">
+                    <p class="text-danger">Blog post not found!</p>
+                </div>
             }
         </div>
     </div>

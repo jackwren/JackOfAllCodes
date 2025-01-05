@@ -1,6 +1,7 @@
 ﻿using JackOfAllCodes.Web.DataAccess;
 using JackOfAllCodes.Web.Models.Domain;
 using Microsoft.EntityFrameworkCore;
+using NpgsqlTypes;
 
 namespace JackOfAllCodes.Web.Repositories
 {
@@ -37,23 +38,44 @@ namespace JackOfAllCodes.Web.Repositories
 
         public async Task<IEnumerable<BlogPost>> GetAllAsync()
         {
-            return await blogPostDbContext.BlogPost.Include(x => x.Tag).ToListAsync();
+            return await blogPostDbContext.BlogPost
+                .Include(x => x.Tag)
+                .Include(x => x.Likes)
+                .Include(x => x.Comments)
+                    .ThenInclude(c => c.Likes)
+                .ToListAsync();
         }
 
         public async Task<BlogPost?> GetAsync(Guid id)
         {
-            return await blogPostDbContext.BlogPost.Include(x => x.Tag).FirstOrDefaultAsync(x => x.Id == id);
+            return await blogPostDbContext.BlogPost
+                .Include(x => x.Tag)
+                .Include(x => x.Likes)
+                .Include(x => x.Comments)
+                    .ThenInclude(c => c.Likes)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<BlogPost?> GetUrlHandleAsync(string urlHandle)
         {
-            return await blogPostDbContext.BlogPost.Include(x => x.Tag).FirstOrDefaultAsync(x => x.UrlHandle == urlHandle);
+            return await blogPostDbContext.BlogPost
+                .Include(x => x.Tag)
+                .Include(x => x.Likes)
+                .Include(x => x.Comments)
+                    .ThenInclude(c => c.Likes)
+                .FirstOrDefaultAsync(x => x.UrlHandle == urlHandle);
         }
+
         public async Task<BlogPost?> UpdateAsync(BlogPost blogPost)
         {
             //Use database call to find if blogpost exists with passed in ID.
             //create new object with this data, to be updated later
-            var existingBlog = await blogPostDbContext.BlogPost.Include(x => x.Tag).FirstOrDefaultAsync(x => x.Id == blogPost.Id);
+            var existingBlog = await blogPostDbContext.BlogPost
+                .Include(x => x.Tag)
+                .Include(x => x.Likes)
+                .Include(x => x.Comments)
+                    .ThenInclude(c => c.Likes)
+                .FirstOrDefaultAsync(x => x.Id == blogPost.Id);
 
             //if it does exist, update the values in new existingBlog object. 
             if (existingBlog != null)

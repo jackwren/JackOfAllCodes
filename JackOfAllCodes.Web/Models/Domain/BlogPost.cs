@@ -17,5 +17,7 @@ namespace JackOfAllCodes.Web.Models.Domain
         public bool Visible { get; set; }
 
         public ICollection<Tag> Tag { get; set; }
+        public ICollection<Comment> Comments { get; set; }
+        public ICollection<Like> Likes { get; set; }
     }
 }

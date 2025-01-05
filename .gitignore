@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+#Blogs images
+/JackOfAllCodes.Web/wwwroot/images/blogs
+/JackOfAllCodes.Web/Migrations

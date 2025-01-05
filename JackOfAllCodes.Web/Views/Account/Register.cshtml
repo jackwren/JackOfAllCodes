@@ -1,4 +1,4 @@
-﻿@model Microsoft.AspNetCore.Identity.Data.RegisterRequest
+﻿@model JackOfAllCodes.Web.Models.ViewModels.RegisterRequest
 
 @{
     ViewData["Title"] = "Register";
@@ -9,6 +9,11 @@
             <h2 class="text-center mb-4">Register</h2>
 
             <form method="post" asp-controller="Account" asp-action="Register">
+                <div class="mb-3">
+                    <label for="Username" class="form-label">User-name</label>
+                    <input type="text" id="Username" name="Username" class="form-control" required />
+                </div>
+
                 <div class="mb-3">
                     <label for="Email" class="form-label">Email</label>
                     <input type="email" id="Email" name="Email" class="form-control" required />

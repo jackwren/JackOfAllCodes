@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using System.Security.Claims;
+using RegisterRequest = JackOfAllCodes.Web.Models.ViewModels.RegisterRequest;
 
 namespace JackOfAllCodes.Web.Services
 {
@@ -35,7 +36,7 @@ namespace JackOfAllCodes.Web.Services
             }
 
             // Create new user
-            var user = new IdentityUser { UserName = request.Email, Email = request.Email };
+            var user = new IdentityUser { UserName = request.Username, Email = request.Email };
 
             // Create the user with a hashed password
             var result = await _userManager.CreateAsync(user, request.Password);

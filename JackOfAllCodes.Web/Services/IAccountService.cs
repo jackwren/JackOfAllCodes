@@ -1,6 +1,7 @@
 ﻿using JackOfAllCodes.Web.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
+using RegisterRequest = JackOfAllCodes.Web.Models.ViewModels.RegisterRequest;
 
 namespace JackOfAllCodes.Web.Services
 {

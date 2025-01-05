@@ -125,6 +125,8 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 // Inject repositories
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
+builder.Services.AddScoped<ILikePostRepository, LikePostRepository>();
+builder.Services.AddScoped<ICommentPostRepository, CommentPostRepository>();
 builder.Services.AddScoped<IFileSystemService, FileSystemService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 

@@ -13,6 +13,10 @@ namespace JackOfAllCodes.Web.DataAccess
 
         public DbSet<Tag> Tag { get; set; }
 
+        public DbSet<Comment> Comment { get; set; }
+
+        public DbSet<Like> Likes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Loop through each entity type and set table and column names to lowercase
