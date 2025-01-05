@@ -3,9 +3,49 @@ html {
     font-size: 14px;
 }
 
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
+@media (max-width: 768px) {
+    /* Stack navbar items vertically */
+    .navbar-nav {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    /* Adjust font sizes */
+    .header-title {
+        font-size: 1.2rem;
+    }
+
+    .blog-details-content {
+        padding: 15px;
+        font-size: 1rem;
+        line-height: 1.6; /* Adjust line-height for smaller screens */
+    }
+
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+}
+
+/* Adjustments for larger screens */
+@media (min-width: 1200px) {
+    .card-img-top {
+        height: 250px;
+    }
+}
+
+/* Additional for smaller mobile devices */
+@media (max-width: 480px) {
+    .header-title {
+        font-size: 1rem;
+    }
+
+    .navbar-toggler {
+        font-size: 1.2rem;
     }
 }
 
@@ -26,6 +66,7 @@ body {
     font-family: 'Arial', sans-serif;
     background-color: #f4f4f4; /* Subtle background color */
     color: #333; /* Dark text for better contrast */
+    overflow-x: hidden; /* Prevent horizontal overflow */
 }
 
 /* Header Section */
@@ -140,13 +181,6 @@ body {
     margin-right: 10px;
 }
 
-/* Responsive Design for Mobile */
-@media (max-width: 768px) {
-    .navbar-nav {
-        flex-direction: column;
-    }
-}
-
 /* Utility Classes */
 .text-red {
     color: #d32f2f; /* Apply red everywhere */
@@ -244,6 +278,22 @@ body {
 .add-comment textarea {
     resize: none;
 }
+
+.blog-details-content img {
+    width: 100%; /* Ensure images are responsive */
+    height: auto; /* Maintain aspect ratio */
+    display: block;
+    margin: 0 auto;
+}
+
+.blog-details-content {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    overflow-wrap: break-word;
+    line-height: 1.8;
+}
+
 /**/
 
 /* Footer Styling (non-fixed version) */
