@@ -1,5 +1,4 @@
-﻿@model Microsoft.AspNetCore.Identity.IdentityUser
-
+﻿@model JackOfAllCodes.Web.Models.Domain.ApplicationUser
 @{
     ViewData["Title"] = "User Profile";
 }
@@ -9,26 +8,35 @@
         <div class="col-md-6">
             <h2 class="text-center mb-4">Your Profile</h2>
 
-            @* <div class="mb-3">
-                <label for="Profile Picture" class="form-label">Profile Picture:</label>
-                <p class="form-control-plaintext">@(Model.UserName ?? "No username set")</p>
-            </div> *@
+            <form enctype="multipart/form-data" method="post" asp-action="UpdateProfile">
+                <div class="mb-3">
+                    <label for="ProfilePicture" class="form-label">Profile Picture:</label>
+                    <input type="file" class="form-control" id="ProfilePicture" name="ProfilePicture" />
+                    @if (Model.ProfilePictureUrl != null)
+                    {
+                        <img src="@Model.ProfilePictureUrl" alt="Profile Image" class="img-thumbnail mt-2" />
+                    }
+                </div>
+
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                </div>
+            </form>
+
+            <form asp-action="ResetPassword">
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-danger">Reset Password</button>
+                </div>
+            </form>
+
             <div class="mb-3">
-                <label for="text" class="form-label">Username:</label>
+                <label for="Username" class="form-label">Username:</label>
                 <p class="form-control-plaintext">@(Model.UserName ?? "No username set")</p>
             </div>
             <div class="mb-3">
                 <label for="Email" class="form-label">Email:</label>
                 <p class="form-control-plaintext">@(Model.Email ?? "No email set")</p>
             </div>
-            @* <div class="mb-3">
-                <label for="text" class="form-label">Reset password?</label>
-                <p class="form-control-plaintext">@(Model.UserName ?? "No username set")</p>
-            </div> *@
-            @* <div class="mb-3">
-                <label for="text" class="form-label">Job Title:</label>
-                <p class="form-control-plaintext">@(Model.JobTitle ?? "No job title set")</p>
-            </div> *@
         </div>
     </div>
 </div>

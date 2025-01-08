@@ -6,8 +6,8 @@ namespace JackOfAllCodes.Web.Models.Domain
     public class Like
     {
         public Guid Id { get; set; }
-        public Guid UserId { get; set; }
-        public IdentityUserExtended User { get; set; }
+        public string UserId { get; set; }
+        public ApplicationUser User { get; set; }
         public Guid? BlogPostId { get; set; }
         public BlogPost BlogPost { get; set; }
         public Guid? CommentId { get; set; }

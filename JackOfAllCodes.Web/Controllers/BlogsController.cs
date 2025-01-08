@@ -10,13 +10,13 @@ namespace JackOfAllCodes.Web.Controllers
         private readonly IBlogPostRepository blogPostRepository;
         private readonly ILikePostRepository likePostRepository;
         private readonly ICommentPostRepository commentPostRepository;
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<ApplicationUser> userManager;
 
         public BlogsController(
             IBlogPostRepository blogPostRepository, 
             ILikePostRepository likePostRepository, 
             ICommentPostRepository commentPostRepository, 
-            UserManager<IdentityUser> userManager)
+            UserManager<ApplicationUser> userManager)
         {
             this.blogPostRepository = blogPostRepository;
             this.likePostRepository = likePostRepository;
@@ -40,8 +40,7 @@ namespace JackOfAllCodes.Web.Controllers
 
             if (userId != null)
             {
-                var id = Guid.Parse(userId);
-                var existingLike = await likePostRepository.GetAsync(blogPostId, id);
+                var existingLike = await likePostRepository.GetAsync(blogPostId, userId);
 
                 if (existingLike != null)
                 {
@@ -51,7 +50,7 @@ namespace JackOfAllCodes.Web.Controllers
                 {
                     var like = new Like
                     {
-                        UserId = id,
+                        UserId = userId,
                         BlogPostId = blogPostId
                     };
                     await likePostRepository.AddAsync(like);
@@ -69,8 +68,7 @@ namespace JackOfAllCodes.Web.Controllers
 
             if (userId != null)
             {
-                var id = Guid.Parse(userId);
-                var existingLike = await likePostRepository.GetLikeCommentAsync(commentId, id);
+                var existingLike = await likePostRepository.GetLikeCommentAsync(commentId, userId);
 
                 if (existingLike != null)
                 {
@@ -80,7 +78,7 @@ namespace JackOfAllCodes.Web.Controllers
                 {
                     var like = new Like
                     {
-                        UserId = id,
+                        UserId = userId,
                         CommentId = commentId
                     };
                     await likePostRepository.AddAsync(like);
@@ -104,7 +102,7 @@ namespace JackOfAllCodes.Web.Controllers
                     Content = commentContent,
                     CreatedDate = DateTime.UtcNow,
                     BlogPostId = blogPostId,
-                    UserId = Guid.Parse(userId),
+                    UserId = userId,
                     UserName = userName,
                     IsVisible = true
                 };

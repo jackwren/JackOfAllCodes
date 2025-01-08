@@ -11,6 +11,7 @@ using JackOfAllCodes.Web.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using JackOfAllCodes.Web.Data;
+using JackOfAllCodes.Web.Models.Domain;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,7 +88,7 @@ if (builder.Environment.IsProduction())
             options.UseNpgsql(blogPostDbConnectionString));
 
         // Configure ApplicationDbContext with Auth connection string
-        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        builder.Services.AddDbContext<AuthDbContext>(options =>
             options.UseNpgsql(authDbConnectionString));
 
     }
@@ -105,13 +106,13 @@ else
     builder.Services.AddDbContext<BlogPostDBContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("BlogPostDbConnectionString")));
 
-    // ApplicationDbContext for Identity (Auth DB connection string)
-    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    // AuthDbContext
+    builder.Services.AddDbContext<AuthDbContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("AuthDbConnectionString")));
 }
 
 // Register Identity services
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
         options.Password.RequiredLength = 8;
         options.Password.RequireNonAlphanumeric = true;
@@ -119,7 +120,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
         options.Password.RequireLowercase = true;
         options.Password.RequireDigit = true;
     })
-.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddEntityFrameworkStores<AuthDbContext>()
 .AddDefaultTokenProviders();
 
 // Inject repositories
@@ -144,12 +145,12 @@ var app = builder.Build();
 // Apply migrations automatically on app start
 if (app.Environment.IsDevelopment())
 {
-    // Apply migrations for ApplicationDbContext (Identity)
+    // AuthDb
     using (var scope = app.Services.CreateScope())
     {
         var services = scope.ServiceProvider;
-        var applicationDbContext = services.GetRequiredService<ApplicationDbContext>();
-        applicationDbContext.Database.Migrate();  // This will apply any pending migrations for Identity DB
+        var authDbContext = services.GetRequiredService<AuthDbContext>();
+        authDbContext.Database.Migrate();  // This will apply any pending migrations for Identity DB
     }
 
     // Apply migrations for BlogPostDbContext

@@ -20,7 +20,7 @@ namespace JackOfAllCodes.Web.Repositories
             return;
         }
 
-        public async Task<Like?> GetAsync(Guid blogPostId, Guid userId)
+        public async Task<Like?> GetAsync(Guid blogPostId, string userId)
         {
             var like = await blogPostDbContext.Likes.FirstOrDefaultAsync(l => l.BlogPostId == blogPostId && l.UserId == userId);
 
@@ -38,7 +38,7 @@ namespace JackOfAllCodes.Web.Repositories
             return;
         }
 
-        public async Task<Like?> GetLikeCommentAsync(Guid commentId, Guid userId)
+        public async Task<Like?> GetLikeCommentAsync(Guid commentId, string userId)
         {
             var like = await blogPostDbContext.Likes.FirstOrDefaultAsync(l => l.CommentId == commentId && l.UserId == userId);
 
