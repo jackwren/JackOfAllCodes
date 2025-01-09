@@ -92,19 +92,19 @@ namespace JackOfAllCodes.Web.Controllers
         public async Task<IActionResult> AddComment(Guid blogPostId, string commentContent)
         {
             var blogPost = await blogPostRepository.GetAsync(blogPostId);
-            var userId = userManager.GetUserId(User);
-            var userName = userManager.GetUserName(User);
+            var user = await userManager.GetUserAsync(User);
 
-            if (userId != null)
+            if (user != null && user.UserName != null)
             {
                 var comment = new Comment
                 {
                     Content = commentContent,
                     CreatedDate = DateTime.UtcNow,
                     BlogPostId = blogPostId,
-                    UserId = userId,
-                    UserName = userName,
-                    IsVisible = true
+                    UserId = user.Id,
+                    UserName = user.UserName,
+                    IsVisible = true,
+                    UserProfilePictureUrl = user.ProfilePictureUrl
                 };
 
                 await commentPostRepository.AddAsync(comment);
