@@ -8,33 +8,26 @@ namespace JackOfAllCodes.Web.Controllers
     public class ImagesController : ControllerBase
     {
         private readonly IFileSystemService _fileSystem;
+        private readonly IFileUploadService _fileUploadService;
 
-        public ImagesController(IFileSystemService fileSystem)
+        public ImagesController(IFileSystemService fileSystem, IFileUploadService fileUploadService)
         {
             _fileSystem = fileSystem;
+            _fileUploadService = fileUploadService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadImage([FromForm] IFormFile formFile)
+        public async Task<IActionResult> UploadImage([FromForm] IFormFile formFile, [FromForm] string folderPath)
         {
-            if (formFile == null || formFile.Length == 0)
-                return BadRequest("No file uploaded.");
-
-            var filePath = Path.Combine(_fileSystem.GetCurrentDirectory(), "wwwroot/images/blogs", formFile.FileName);
-            var directory = Path.GetDirectoryName(filePath);
-
-            if (!_fileSystem.DirectoryExists(directory))
+            try
             {
-                _fileSystem.CreateDirectory(directory);
+                var fileUrl = await _fileUploadService.UploadFileAsync(formFile, folderPath);
+                return Ok(new { link = fileUrl });
             }
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            catch (Exception ex)
             {
-                await formFile.CopyToAsync(stream);
+                return BadRequest(ex.Message);
             }
-
-            var fileUrl = $"/images/blogs/{formFile.FileName}";
-            return Ok(new { link = fileUrl });
         }
     }
 

@@ -1,5 +1,5 @@
 ﻿using JackOfAllCodes.Web.Models;
-using Microsoft.AspNetCore.Identity;
+using JackOfAllCodes.Web.Models.Domain;
 using Microsoft.AspNetCore.Identity.Data;
 using RegisterRequest = JackOfAllCodes.Web.Models.ViewModels.RegisterRequest;
 
@@ -11,7 +11,9 @@ namespace JackOfAllCodes.Web.Services
 
         Task<ServiceResponse> LoginAsync(LoginRequest request);
 
-        Task<IdentityUser?> GetCurrentUser();
+        Task<ApplicationUser?> GetCurrentUser();
+
+        Task<ApplicationUser?> UpdateUser(ApplicationUser? user);
 
         Task LogoutAsync();
     }

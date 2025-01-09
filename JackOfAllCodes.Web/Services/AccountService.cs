@@ -75,7 +75,7 @@ namespace JackOfAllCodes.Web.Services
             return new ServiceResponse { Success = true, Message = "Login successful", UserId = user.Id.ToString() };
         }
 
-        public async Task<IdentityUser?> GetCurrentUser()
+        public async Task<ApplicationUser?> GetCurrentUser()
         {
             var currentClaim = _httpContextAccessor.HttpContext?.User;
 
@@ -94,6 +94,15 @@ namespace JackOfAllCodes.Web.Services
             var user = await _userManager.FindByIdAsync(userId);
             return user;
         }
+
+        public async Task<ApplicationUser?> UpdateUser(ApplicationUser? user)
+        {
+            if (user == null) return null;
+
+            await _userManager.UpdateAsync(user);
+
+            return user;
+        } 
 
         public async Task LogoutAsync()
         {

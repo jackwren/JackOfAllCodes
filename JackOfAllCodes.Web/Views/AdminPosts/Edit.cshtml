@@ -148,7 +148,8 @@
 
                 // Create FormData and append the selected file
                 var formData = new FormData();
-                formData.append('formFile', file);
+                formData.append('formFile', file)
+                formData.append('folderPath', 'blogs')
 
                 // Send the file to the server for upload
                 const response = await fetch('/api/images', {
@@ -175,7 +176,8 @@
         async function uploadFeaturedImage(e) {
 
             let data = new FormData();
-            data.append('formFile', e.target.files[0]);
+            data.append('formFile', e.target.files[0])
+            data.append('folderPath', 'blogs');
 
             await fetch('/api/images', {
                 method: 'POST',

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using RegisterRequest = JackOfAllCodes.Web.Models.ViewModels.RegisterRequest;
+using JackOfAllCodes.Web.Models.Domain;
 
 public class AccountController : Controller
 {
@@ -16,14 +17,12 @@ public class AccountController : Controller
         _accountService = accountService;
     }
 
-    // Register view
     [HttpGet]
     public IActionResult Register()
     {
         return View();
     }
 
-    // Register action (handle form submission)
     [HttpPost]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
@@ -34,7 +33,7 @@ public class AccountController : Controller
             if (!result.Success)
             {
                 ModelState.AddModelError("", result.Message);
-                ViewData["ErrorMessage"] = result.Message; // Pass the error message
+                ViewData["ErrorMessage"] = result.Message;
                 return View(request);
             }
 
@@ -45,15 +44,12 @@ public class AccountController : Controller
         return View(request);
     }
 
-
-    // Login view
     [HttpGet]
     public IActionResult Login()
     {
         return View();
     }
 
-    // Login action (handle form submission)
     [HttpPost]
     public async Task<IActionResult> Login(LoginRequest request)
     {
@@ -64,7 +60,7 @@ public class AccountController : Controller
             if (!result.Success)
             {
                 ModelState.AddModelError("", result.Message);
-                ViewData["ErrorMessage"] = result.Message; // Pass the error message
+                ViewData["ErrorMessage"] = result.Message;
                 return View(request);
             }
 
@@ -92,7 +88,6 @@ public class AccountController : Controller
         return View();
     }
 
-    // Profile view
     [Authorize]
     [HttpGet]
     public async Task<IActionResult> ProfileAsync()
@@ -111,7 +106,32 @@ public class AccountController : Controller
         return View(user);
     }
 
-    // Logout action
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> UpdateProfile([FromForm] string profilePictureUrl)
+    {
+        var user = await _accountService.GetCurrentUser();
+
+        if (user == null)
+        {
+            return RedirectToAction("Login");
+        }
+
+        user.ProfilePictureUrl = profilePictureUrl;
+
+        // Update userProfile
+        await _accountService.UpdateUser(user);
+
+        return RedirectToAction("Profile");
+    }
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> ResetPassword()
+    {
+        return View();
+    }
+
     [HttpGet]
     public IActionResult Logout()
     {

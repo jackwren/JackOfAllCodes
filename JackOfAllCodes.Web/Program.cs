@@ -129,6 +129,7 @@ builder.Services.AddScoped<IBlogPostRepository, BlogPostRepository>();
 builder.Services.AddScoped<ILikePostRepository, LikePostRepository>();
 builder.Services.AddScoped<ICommentPostRepository, CommentPostRepository>();
 builder.Services.AddScoped<IFileSystemService, FileSystemService>();
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 
 // Add cookie authentication

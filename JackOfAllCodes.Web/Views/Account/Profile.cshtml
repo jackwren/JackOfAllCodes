@@ -5,38 +5,113 @@
 
 <div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <h2 class="text-center mb-4">Your Profile</h2>
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body">
+                    <!-- Profile Header -->
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold">Your Profile</h2>
+                        <p class="text-muted">Manage your profile settings and personal information.</p>
+                    </div>
 
-            <form enctype="multipart/form-data" method="post" asp-action="UpdateProfile">
-                <div class="mb-3">
-                    <label for="ProfilePicture" class="form-label">Profile Picture:</label>
-                    <input type="file" class="form-control" id="ProfilePicture" name="ProfilePicture" />
-                    @if (Model.ProfilePictureUrl != null)
-                    {
-                        <img src="@Model.ProfilePictureUrl" alt="Profile Image" class="img-thumbnail mt-2" />
-                    }
+                    <!-- Profile Picture Section -->
+                    <div class="text-center mb-3">
+                        <label for="ProfilePicture" class="form-label d-block fs-5">Profile Picture</label>
+                        <div class="position-relative">
+                            <input type="file" class="form-control d-none" id="ProfilePicture" name="profilePicture" />
+                            <div class="img-thumbnail border-0 p-0 rounded-circle overflow-hidden" style="width: 150px; height: 150px; margin: 0 auto;">
+                                @if (Model.ProfilePictureUrl != null)
+                                {
+                                    <img src="@Model.ProfilePictureUrl" id="profilePictureUpload" alt="Profile Image" class="w-100 h-100 object-fit-cover" />
+                                }
+                                else
+                                {
+                                    <img src="https://via.placeholder.com/150" id="profilePictureUpload" alt="Default Profile Image" class="w-100 h-100 object-fit-cover" />
+                                }
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-primary mt-2" id="uploadButton">Change Picture</button>
+                    </div>
+
+                    <!-- Username & Email -->
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <th scope="row" class="text-muted">Username:</th>
+                                <td>@((Model.UserName != null) ? Model.UserName : "No username set")</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="text-muted">Email:</th>
+                                <td>@((Model.Email != null) ? Model.Email : "No email set")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between">
+                        <form asp-action="ResetPassword" class="w-100">
+                            <button type="submit" class="btn btn-danger w-100">Reset Password</button>
+                        </form>
+        
+                        <form asp-action="UpdateProfile" method="post" class="w-100">
+                            <!-- Hidden input that holds the profile picture URL -->
+                            <input type="hidden" name="profilePictureUrl" id="hiddenProfilePictureUrl" value="@Model.ProfilePictureUrl" />
+
+                            <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+                        </form>
+                    </div>
                 </div>
-
-                <div class="mb-3">
-                    <button type="submit" class="btn btn-primary">Update Profile</button>
-                </div>
-            </form>
-
-            <form asp-action="ResetPassword">
-                <div class="mb-3">
-                    <button type="submit" class="btn btn-danger">Reset Password</button>
-                </div>
-            </form>
-
-            <div class="mb-3">
-                <label for="Username" class="form-label">Username:</label>
-                <p class="form-control-plaintext">@(Model.UserName ?? "No username set")</p>
-            </div>
-            <div class="mb-3">
-                <label for="Email" class="form-label">Email:</label>
-                <p class="form-control-plaintext">@(Model.Email ?? "No email set")</p>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Get references to elements
+        const profilePictureInput = document.getElementById('ProfilePicture');
+        const profilePictureDisplay = document.getElementById('profilePictureUpload');
+        const uploadButton = document.getElementById('uploadButton');
+
+        // Hidden properties
+        const hiddenProfilePictureUrl = document.getElementById('hiddenProfilePictureUrl');
+
+        // Function to handle image upload
+        async function uploadProfilePicture(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            let formData = new FormData();
+            formData.append('formFile', file);
+            formData.append('folderPath', `@(Model.Id.ToString())/Profile`);
+
+            try {
+                const response = await fetch('/api/images', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': '*/*'
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to upload image.');
+                }
+
+                const result = await response.json();
+                profilePictureDisplay.src = result.link;
+                hiddenProfilePictureUrl.value = result.link;
+                profilePictureDisplay.style.display = 'block'; 
+            } catch (error) {
+                console.error('Error uploading the image:', error);
+                alert('Failed to upload the image. Please try again.');
+            }
+        }
+
+        // Trigger file input on button click
+        uploadButton.addEventListener('click', () => profilePictureInput.click());
+
+        // Listen for file input change event
+        profilePictureInput.addEventListener('change', uploadProfilePicture);
+    </script>
+}

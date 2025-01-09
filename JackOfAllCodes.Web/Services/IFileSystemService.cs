@@ -6,5 +6,6 @@
         Task CopyFileAsync(Stream sourceStream, string filePath);
         bool DirectoryExists(string path);
         void CreateDirectory(string path);
+        void DeleteDirectory(string path);
     }
 }
