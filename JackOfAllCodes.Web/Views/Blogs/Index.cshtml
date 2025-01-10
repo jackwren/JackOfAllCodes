@@ -1,6 +1,6 @@
-﻿@model JackOfAllCodes.Web.Models.Domain.BlogPost
+﻿@model JackOfAllCodes.Web.Models.ViewModels.BlogsViewModel
 @{
-    ViewData["Title"] = Model.PageTitle;
+    ViewData["Title"] = Model.BlogPost.PageTitle;
 }
 
 <div class="container my-5">
@@ -10,17 +10,17 @@
             @if (Model != null)
             {
                 <div class="blog-post border rounded shadow-sm p-4 bg-white">
-                    <h1 class="mb-3">@Model.Heading</h1>
+                    <h1 class="mb-3">@Model.BlogPost.Heading</h1>
 
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-secondary small">By <strong>@Model.Author</strong></span>
-                        <span class="text-secondary small">@Model.PublishedDate.ToString("MMM dd, yyyy")</span>
+                        <span class="text-secondary small">By <strong>@Model.BlogPost.Author</strong></span>
+                        <span class="text-secondary small">@Model.BlogPost.PublishedDate.ToString("MMM dd, yyyy")</span>
                     </div>
 
                     <div class="mb-3 d-flex justify-content-between align-items-center">
                         <!-- Tags Section -->
                         <div class="tags d-flex">
-                            @foreach (var item in Model.Tag)
+                            @foreach (var item in Model.BlogPost.Tag)
                             {
                                 <span class="badge bg-secondary me-2">#@item.Name</span>
                             }
@@ -28,21 +28,21 @@
 
                         <!-- Like Button Form -->
                         <div class="like-button d-flex align-items-center">
-                            <form asp-action="LikePost" asp-route-blogPostId="@Model.Id" method="post">
+                            <form asp-action="LikePost" asp-route-blogPostId="@Model.BlogPost.Id" method="post">
                                 <button type="submit" class="btn btn-link p-0 d-flex align-items-center" style="cursor: pointer;">
                                     <span class="badge bg-primary text-white d-flex align-items-center">
                                         <i class="bi bi-hand-thumbs-up" style="font-size: 1rem; margin-right: 5px;"></i>
-                                        <span id="likeCount">@(Model.Likes?.Count() ?? 0)</span>
+                                        <span id="likeCount">@(Model.BlogPost.Likes?.Count() ?? 0)</span>
                                     </span>
                                 </button>
                             </form>
                         </div>
                     </div>
 
-                    <img src="@Model.FeaturedImageUrl" class="img-fluid rounded mb-4" alt="Blog Image" />
+                    <img src="@Model.BlogPost.FeaturedImageUrl" class="img-fluid rounded mb-4" alt="Blog Image" />
 
                     <div class="blog-details-content mb-4" style="line-height: 1.6;">
-                        @Html.Raw(Model.Content)
+                        @Html.Raw(Model.BlogPost.Content)
                     </div>
                 </div>
 
@@ -50,17 +50,18 @@
                 <div class="comments-section mt-5">
                     <h3 class="text-secondary mb-4">Comments</h3>
                     <div class="comment-list">
-                        @if (Model.Comments != null && Model.Comments.Any())
+                        @if (Model.BlogPost.Comments != null && Model.BlogPost.Comments.Any())
                         {
-                            @foreach (var comment in Model.Comments.OrderByDescending(x => x.CreatedDate))
+                            @foreach (var comment in Model.BlogPost.Comments.OrderByDescending(x => x.CreatedDate))
                             {
                                 <div class="comment bg-light rounded p-3 mb-3">
                                     <div class="d-flex justify-content-between">
                                         <!-- Profile Picture and Username -->
                                         <div class="d-flex align-items-center">
                                             <!-- Display Profile Picture or a Blank Box if None -->
-                                            <img src="@(!string.IsNullOrEmpty(comment.UserProfilePictureUrl) ? comment.UserProfilePictureUrl : "/images/default-placeholder-user.jpg")"
-                                                 alt="@comment.UserName's Profile Picture"
+                                            <img src="@(Model.Users.FirstOrDefault(u => u.Id == comment.UserId)?.ProfilePictureUrl ?? "/images/default-placeholder-user.jpg")"
+                                                 alt="@(Model.Users.FirstOrDefault(u => u.Id == comment.UserId)?.UserName)'s Profile Picture"
+                                                 id="profile-img"
                                                  class="rounded-circle"
                                                  style="width: 40px; height: 40px; object-fit: cover; margin-right: 10px;">
                                             <span class="fw-bold text-dark">@comment.UserName</span>
@@ -71,7 +72,7 @@
 
                                     <!-- Like Button and Like Count Section (Aligned to the right) -->
                                     <div class="d-flex justify-content-end align-items-center mt-2">
-                                        <form asp-action="LikeComment" asp-route-blogPostId="@Model.Id" asp-route-commentId="@comment.Id" method="post">
+                                        <form asp-action="LikeComment" asp-route-blogPostId="@Model.BlogPost.Id" asp-route-commentId="@comment.Id" method="post">
                                             <button type="submit" class="btn btn-link p-0 d-flex align-items-center" style="cursor: pointer;">
                                                 <span class="badge bg-primary text-white d-flex align-items-center">
                                                     <i class="bi bi-hand-thumbs-up" style="font-size: 1rem; margin-right: 5px;"></i>
@@ -83,7 +84,7 @@
 
                                     @if (User.IsInRole("Admin"))
                                     {
-                                        <form asp-action="DeleteComment" asp-route-blogPostId="@Model.Id" asp-route-commentId="@comment.Id" method="post" class="ms-2">
+                                        <form asp-action="DeleteComment" asp-route-blogPostId="@Model.BlogPost.Id" asp-route-commentId="@comment.Id" method="post" class="ms-2">
                                             <button type="submit" class="btn btn-sm btn-danger">
                                                 <i class="bi bi-trash"></i> Delete
                                             </button>
@@ -107,7 +108,7 @@
                                 <div class="mb-3">
                                     <textarea name="commentContent" class="form-control" rows="4" placeholder="Write your comment here..." required></textarea>
                                 </div>
-                                <input type="hidden" name="blogPostId" value="@Model.Id" />
+                                <input type="hidden" name="blogPostId" value="@Model.BlogPost.Id" />
                                 <button type="submit" class="btn btn-primary">
                                     Post Comment
                                 </button>

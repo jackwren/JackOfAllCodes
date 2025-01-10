@@ -15,6 +15,5 @@ namespace JackOfAllCodes.Web.Models.Domain
         public string UserName { get; set; }
         public bool IsVisible { get; set; }
         public ICollection<Like> Likes { get; set; }
-        public string? UserProfilePictureUrl { get; set; }
     }
 }

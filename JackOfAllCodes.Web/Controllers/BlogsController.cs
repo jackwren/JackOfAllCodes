@@ -1,7 +1,9 @@
 ﻿using JackOfAllCodes.Web.Models.Domain;
+using JackOfAllCodes.Web.Models.ViewModels;
 using JackOfAllCodes.Web.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace JackOfAllCodes.Web.Controllers
 {
@@ -27,9 +29,26 @@ namespace JackOfAllCodes.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(string urlHandle)
         {
-            var handle = await blogPostRepository.GetUrlHandleAsync(urlHandle);
+            var blogPost = await blogPostRepository.GetUrlHandleAsync(urlHandle);
 
-            return View(handle);
+            if (blogPost == null)
+            {
+                return NotFound();
+            }
+
+            // Get distinct users who have commented on the blog post
+            var userIds = blogPost.Comments.Select(comment => comment.UserId).Distinct();
+            var users = await userManager.Users
+                .Where(user => userIds.Contains(user.Id))
+                .ToListAsync();
+
+            var blogsView = new BlogsViewModel
+            {
+                BlogPost = blogPost,
+                Users = users
+            };
+
+            return View(blogsView);
         }
 
         [HttpPost]
@@ -103,8 +122,7 @@ namespace JackOfAllCodes.Web.Controllers
                     BlogPostId = blogPostId,
                     UserId = user.Id,
                     UserName = user.UserName,
-                    IsVisible = true,
-                    UserProfilePictureUrl = user.ProfilePictureUrl
+                    IsVisible = true
                 };
 
                 await commentPostRepository.AddAsync(comment);
