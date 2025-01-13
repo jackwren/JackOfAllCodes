@@ -70,7 +70,7 @@ namespace JackOfAllCodes.UnitTests.Middleware
 
             // Assert
             // Verifying that the content type is set to "application/json"
-            Assert.Equal("application/json", httpContext.Response.ContentType);
+            Assert.Equal("application/json; charset=utf-8", httpContext.Response.ContentType);
         }
     }
 }

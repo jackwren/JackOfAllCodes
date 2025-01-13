@@ -15,19 +15,41 @@
         {
             try
             {
-                // Pass the request to the next middleware
                 await _next(httpContext);
+            }
+            catch (ArgumentException ex)
+            {
+                await HandleExceptionAsync(httpContext, ex, StatusCodes.Status400BadRequest, "Invalid argument provided.");
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                await HandleExceptionAsync(httpContext, ex, StatusCodes.Status401Unauthorized, "Unauthorized access.");
             }
             catch (Exception ex)
             {
-                // Log the exception using Serilog (which you configured earlier)
-                _logger.LogError(ex, "Unhandled exception occurred");
-
-                // Return a generic error message to the user (you can customize this)
-                httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                httpContext.Response.ContentType = "application/json";
-                await httpContext.Response.WriteAsync("{\"error\": \"An unexpected error occurred.\"}");
+                await HandleExceptionAsync(httpContext, ex, StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
             }
         }
+
+        private async Task HandleExceptionAsync(HttpContext httpContext, Exception exception, int statusCode, string userMessage)
+        {
+            // Log the exception
+            _logger.LogError(exception, "An exception occurred: {Message}", exception.Message);
+
+            // Set the response details
+            httpContext.Response.StatusCode = statusCode;
+            httpContext.Response.ContentType = "application/json";
+
+            // Create the error response
+            var response = new
+            {
+                error = userMessage,
+                details = exception.Message
+            };
+
+            // Write the response as JSON
+            await httpContext.Response.WriteAsJsonAsync(response);
+        }
     }
+
 }

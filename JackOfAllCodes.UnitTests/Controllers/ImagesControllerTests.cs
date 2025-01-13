@@ -10,17 +10,19 @@ namespace JackOfAllCodes.UnitTests.Controllers
     {
         private readonly ImagesController _controller;
         private readonly Mock<IFileSystemService> _mockFileSystem;
+        private readonly Mock<IFileUploadService> _mockFileUploadService;
 
         public ImagesControllerTests()
         {
             _mockFileSystem = new Mock<IFileSystemService>();
-            _controller = new ImagesController(_mockFileSystem.Object);
+            _mockFileUploadService = new Mock<IFileUploadService>();
+            _controller = new ImagesController(_mockFileSystem.Object, _mockFileUploadService.Object);
         }
 
         [Fact]
         public async Task UploadImage_ReturnsOk_WithFileUrl_WhenFileIsValid()
         {
-            // Arrange: Create a mock file (IFormFile)
+            // Arrange
             var fileName = "testimage.jpg";
             var mockFile = new Mock<IFormFile>();
             var fileContent = new byte[] { 1, 2, 3, 4, 5 }; // Dummy content
@@ -31,63 +33,75 @@ namespace JackOfAllCodes.UnitTests.Controllers
             mockFile.Setup(f => f.OpenReadStream()).Returns(stream);
             mockFile.Setup(f => f.CopyToAsync(It.IsAny<Stream>(), default)).Returns(Task.CompletedTask);
 
-            // Set up the mock IFileSystem to simulate GetCurrentDirectory and DirectoryExists
-            var tempDir = Path.Combine(Path.GetTempPath(), "images"); // Temporary directory for image uploads
-            var imagesDir = Path.Combine(tempDir, "wwwroot", "images", "blogs"); // Final target directory
+            var folderPath = "images/blogs"; // Example folder path
+            var expectedFileUrl = $"https://example.com/{folderPath}/{fileName}";
 
-            if (!Directory.Exists(imagesDir))
-            {
-                Directory.CreateDirectory(imagesDir);  // Create the images directory under temp path
-            }
+            // Mock _fileUploadService
+            _mockFileUploadService
+                .Setup(service => service.UploadFileAsync(mockFile.Object, folderPath))
+                .ReturnsAsync(expectedFileUrl);
 
-            // Mock IFileSystem methods
-            _mockFileSystem.Setup(fs => fs.GetCurrentDirectory()).Returns(tempDir);  // Ensure current directory points to tempDir
-            _mockFileSystem.Setup(fs => fs.DirectoryExists(It.IsAny<string>())).Returns(true); // Simulate the directory exists
-            _mockFileSystem.Setup(fs => fs.CreateDirectory(It.IsAny<string>())).Verifiable(); // Verify if directory creation is triggered
+            // Act
+            var result = await _controller.UploadImage(mockFile.Object, folderPath);
 
-            // Act: Call the UploadImage method
-            var result = await _controller.UploadImage(mockFile.Object);
-
-            // Assert: Check if the result is OK and contains the correct file URL
+            // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.NotNull(okResult);
 
-            Assert.NotNull(okResult); // Ensure the return value is not null
+            _mockFileUploadService.Verify(service => service.UploadFileAsync(mockFile.Object, folderPath), Times.Once);
         }
 
         [Fact]
         public async Task UploadImage_ReturnsBadRequest_WhenNoFileUploaded()
         {
-            // Arrange: Pass a null IFormFile
+            // Arrange
             IFormFile nullFile = null;
+            var folderPath = "images/blogs";
 
-            // Act: Call the UploadImage method
-            var result = await _controller.UploadImage(nullFile);
+            _mockFileUploadService
+                .Setup(service => service.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string>()))
+                .ThrowsAsync(new ArgumentException("No file uploaded.")); // Simulate exception for invalid input
 
-            // Assert: Check if the result is BadRequest
+            // Act
+            var result = await _controller.UploadImage(nullFile, folderPath);
+
+            // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal("No file uploaded.", badRequestResult.Value);
+
+            _mockFileUploadService.Verify(service => service.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string>()), Times.Once);
         }
 
         [Fact]
-        public async Task UploadImage_ReturnsBadRequest_WhenFileIsEmpty()
+        public async Task UploadImage_ReturnsBadRequest_WhenServiceThrowsException()
         {
-            // Arrange: Create a mock file with no content
-            var fileName = "emptyfile.txt";
+            // Arrange
+            var fileName = "testimage.jpg";
             var mockFile = new Mock<IFormFile>();
-            var emptyContent = new byte[0]; // Empty content
-            var stream = new MemoryStream(emptyContent);
+            var fileContent = new byte[] { 1, 2, 3, 4, 5 };
+            var stream = new MemoryStream(fileContent);
 
-            mockFile.Setup(f => f.Length).Returns(0); // Empty file length
+            mockFile.Setup(f => f.Length).Returns(fileContent.Length);
             mockFile.Setup(f => f.FileName).Returns(fileName);
             mockFile.Setup(f => f.OpenReadStream()).Returns(stream);
             mockFile.Setup(f => f.CopyToAsync(It.IsAny<Stream>(), default)).Returns(Task.CompletedTask);
 
-            // Act: Call the UploadImage method
-            var result = await _controller.UploadImage(mockFile.Object);
+            var folderPath = "images/blogs";
 
-            // Assert: Check if the result is BadRequest due to empty file
+            // Mock _fileUploadService to throw an exception
+            _mockFileUploadService
+                .Setup(service => service.UploadFileAsync(mockFile.Object, folderPath))
+                .ThrowsAsync(new Exception("An error occurred while uploading the file."));
+
+            // Act
+            var result = await _controller.UploadImage(mockFile.Object, folderPath);
+
+            // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("No file uploaded.", badRequestResult.Value);
+            Assert.Equal("An error occurred while uploading the file.", badRequestResult.Value);
+
+            // Verify service interaction
+            _mockFileUploadService.Verify(service => service.UploadFileAsync(mockFile.Object, folderPath), Times.Once);
         }
     }
 }

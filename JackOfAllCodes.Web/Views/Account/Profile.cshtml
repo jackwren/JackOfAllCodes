@@ -22,11 +22,11 @@
                             <div class="img-thumbnail border-0 p-0 rounded-circle overflow-hidden" style="width: 150px; height: 150px; margin: 0 auto;">
                                 @if (Model.ProfilePictureUrl != null)
                                 {
-                                    <img src="@Model.ProfilePictureUrl" id="profilePictureUpload" alt="Profile Image" class="w-100 h-100 object-fit-cover" />
+                                    <img src="@Model.ProfilePictureUrl" id="profilePictureUpload" alt="Profile Image" class="w-100 h-100 object-fit-cover" onerror="this.onerror=null;this.src='/images/default-placeholder-user.jpg';" />
                                 }
                                 else
                                 {
-                                    <img src="https://via.placeholder.com/150" id="profilePictureUpload" alt="Default Profile Image" class="w-100 h-100 object-fit-cover" />
+                                    <img src="/images/default-placeholder-user.jpg" id="profilePictureUpload" alt="Default Profile Image" class="w-100 h-100 object-fit-cover" />
                                 }
                             </div>
                         </div>

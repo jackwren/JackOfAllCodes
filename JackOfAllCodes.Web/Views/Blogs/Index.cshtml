@@ -56,21 +56,19 @@
                             {
                                 <div class="comment bg-light rounded p-3 mb-3">
                                     <div class="d-flex justify-content-between">
-                                        <!-- Profile Picture and Username -->
                                         <div class="d-flex align-items-center">
-                                            <!-- Display Profile Picture or a Blank Box if None -->
                                             <img src="@(Model.Users.FirstOrDefault(u => u.Id == comment.UserId)?.ProfilePictureUrl ?? "/images/default-placeholder-user.jpg")"
                                                  alt="@(Model.Users.FirstOrDefault(u => u.Id == comment.UserId)?.UserName)'s Profile Picture"
                                                  id="profile-img"
                                                  class="rounded-circle"
-                                                 style="width: 40px; height: 40px; object-fit: cover; margin-right: 10px;">
+                                                 style="width: 40px; height: 40px; object-fit: cover; margin-right: 10px;"
+                                                 onerror="this.onerror=null;this.src='/images/default-placeholder-user.jpg';">
                                             <span class="fw-bold text-dark">@comment.UserName</span>
                                         </div>
                                         <span class="text-muted small">@comment.CreatedDate.ToString("g")</span>
                                     </div>
                                     <p class="mt-2">@comment.Content</p>
 
-                                    <!-- Like Button and Like Count Section (Aligned to the right) -->
                                     <div class="d-flex justify-content-end align-items-center mt-2">
                                         <form asp-action="LikeComment" asp-route-blogPostId="@Model.BlogPost.Id" asp-route-commentId="@comment.Id" method="post">
                                             <button type="submit" class="btn btn-link p-0 d-flex align-items-center" style="cursor: pointer;">
