@@ -75,16 +75,36 @@
 
     <!-- Toast Notification -->
     <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="errorToast" class="toast bg-danger text-white" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto">Error</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+
+        <!-- Error Toast -->
+        @if (ViewData["ErrorMessage"] != null)
+        {
+            <div id="errorToast" class="toast bg-danger text-white" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">Error</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    @ViewData["ErrorMessage"]
+                </div>
             </div>
-            <div class="toast-body">
-                @ViewData["ErrorMessage"]
+        }
+
+        <!-- Success Toast -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div id="successToast" class="toast bg-success text-white" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">Success</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    @TempData["SuccessMessage"]
+                </div>
             </div>
-        </div>
+        }
     </div>
+
 
     <!-- Main content -->
     <div>
@@ -106,10 +126,18 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            var errorMessage = "@ViewData["ErrorMessage"]";
-            if (errorMessage) {
-                var toast = new bootstrap.Toast(document.getElementById('errorToast'));
-                toast.show();
+            // Show Error Toast if exists
+            var errorToastEl = document.getElementById('errorToast');
+            if (errorToastEl) {
+                var errorToast = new bootstrap.Toast(errorToastEl, { delay: 5000 });
+                errorToast.show();
+            }
+
+            // Show Success Toast if exists
+            var successToastEl = document.getElementById('successToast');
+            if (successToastEl) {
+                var successToast = new bootstrap.Toast(successToastEl, { delay: 5000 });
+                successToast.show();
             }
         });
     </script>

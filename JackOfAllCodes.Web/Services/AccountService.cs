@@ -1,5 +1,6 @@
 ﻿using JackOfAllCodes.Web.Models;
 using JackOfAllCodes.Web.Models.Domain;
+using JackOfAllCodes.Web.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using System.Security.Claims;
@@ -10,17 +11,20 @@ namespace JackOfAllCodes.Web.Services
     public class AccountService : IAccountService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly EmailSenderService _emailSender;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
         public AccountService(
             IHttpContextAccessor httpContextAccessor,
+            EmailSenderService emailSender,
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
             SignInManager<ApplicationUser> signInManager)
         {
             _httpContextAccessor = httpContextAccessor;
+            _emailSender = emailSender;
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
@@ -103,6 +107,47 @@ namespace JackOfAllCodes.Web.Services
 
             return user;
         } 
+
+        public async Task<ServiceResponse> ResetUserPassword(string email, string callbackUrl)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return new ServiceResponse { Success = false, Message = "User not found" };
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var codedToken = Uri.EscapeDataString(token);
+
+            var resetUrlWithToken = $"{callbackUrl}&token={codedToken}";
+
+            await _emailSender.SendPasswordResetEmail(email, resetUrlWithToken);
+
+            return new ServiceResponse { Success = true, Message = "Reset successful" };
+        }
+
+        public async Task<ServiceResponse> SetNewUserPassword(SetNewPasswordViewModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user == null)
+            {
+                return new ServiceResponse { Success = false, Message = "User not found." };
+            }
+
+            var decodedToken = Uri.UnescapeDataString(model.Token);
+
+            var resetResult = await _userManager.ResetPasswordAsync(user, decodedToken, model.Password);
+
+            if (!resetResult.Succeeded)
+            {
+                var errors = string.Join("; ", resetResult.Errors.Select(e => e.Description));
+                return new ServiceResponse { Success = false, Message = $"Password reset failed: {errors}" };
+            }
+
+            return new ServiceResponse { Success = true, Message = "Password reset successful." };
+        }
 
         public async Task LogoutAsync()
         {

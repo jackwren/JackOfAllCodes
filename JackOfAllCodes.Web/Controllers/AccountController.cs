@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using RegisterRequest = JackOfAllCodes.Web.Models.ViewModels.RegisterRequest;
-using JackOfAllCodes.Web.Models.Domain;
+using JackOfAllCodes.Web.Models.ViewModels;
+using Amazon.Runtime.Internal;
 
 public class AccountController : Controller
 {
@@ -125,9 +126,71 @@ public class AccountController : Controller
         return RedirectToAction("Profile");
     }
 
-    [Authorize]
+    [HttpGet]
+    public IActionResult ResetPassword()
+    {
+        return View();
+    }
+
     [HttpPost]
-    public async Task<IActionResult> ResetPassword()
+    public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var callbackUrl = Url.Action(
+            "SetNewPassword",
+            "Account",
+            new { email = model.Email },
+            protocol: Request.Scheme
+        );
+
+        var result = await _accountService.ResetUserPassword(model.Email, callbackUrl);
+
+        return RedirectToAction("ResetPasswordConfirmation");
+    }
+
+    [HttpGet]
+    public IActionResult SetNewPassword(string email, string token)
+    {
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
+        {
+            return RedirectToAction("Login");
+        }
+
+        var model = new SetNewPasswordViewModel
+        {
+            Token = token,
+            Email = email
+        };
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> SetNewPassword(SetNewPasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var result = await _accountService.SetNewUserPassword(model);
+
+        if (!result.Success)
+        {
+            ModelState.AddModelError("", result.Message);
+            ViewData["ErrorMessage"] = result.Message;
+            return View(model);
+        }
+
+        TempData["SuccessMessage"] = "Your password has been reset successfully!";
+        return RedirectToAction("Login");
+    }
+
+    [HttpGet]
+    public IActionResult ResetPasswordConfirmation()
     {
         return View();
     }

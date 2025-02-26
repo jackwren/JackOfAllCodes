@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using JackOfAllCodes.Web.Data;
 using JackOfAllCodes.Web.Models.Domain;
+using Amazon.SimpleEmail;
+using JackOfAllCodes.Web.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,7 +53,7 @@ builder.Services.AddControllersWithViews();
 // Check if the environment is production
 if (builder.Environment.IsProduction())
 {
-    Log.Information("Environment is Production. Loading DB connection string from AWS Parameter Store.");
+    Log.Information("Environment is Production.");
 
     // Load connection string from AWS Parameter Store
     var ssmClient = new AmazonSimpleSystemsManagementClient();
@@ -91,6 +93,9 @@ if (builder.Environment.IsProduction())
         builder.Services.AddDbContext<AuthDbContext>(options =>
             options.UseNpgsql(authDbConnectionString));
 
+        // SES Email setup for production
+        builder.Services.AddAWSService<IAmazonSimpleEmailService>();
+
     }
     catch (Exception ex)
     {
@@ -100,7 +105,7 @@ if (builder.Environment.IsProduction())
 }
 else
 {
-    Log.Information("Environment is Development. Loading DB connection string from appsettings.json.");
+    Log.Information("Environment is Development.");
 
     // BlogPost DB
     builder.Services.AddDbContext<BlogPostDBContext>(options =>
@@ -109,6 +114,11 @@ else
     // AuthDbContext
     builder.Services.AddDbContext<AuthDbContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("AuthDbConnectionString")));
+
+    // SES Email setup for local development
+    var awsOptions = builder.Configuration.GetAWSOptions(); // Uses default profile
+    builder.Services.AddSingleton<IAmazonSimpleEmailService>(sp =>
+        new AmazonSimpleEmailServiceClient(awsOptions.Credentials, awsOptions.Region));
 }
 
 // Register Identity services
@@ -131,6 +141,14 @@ builder.Services.AddScoped<ICommentPostRepository, CommentPostRepository>();
 builder.Services.AddScoped<IFileSystemService, FileSystemService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+
+// SES Email services
+builder.Services.AddTransient<EmailSenderService>();
+
+// Configure Password Reset token lifespan
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
+    options.TokenLifespan = TimeSpan.FromMinutes(30)
+);
 
 // Add cookie authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
