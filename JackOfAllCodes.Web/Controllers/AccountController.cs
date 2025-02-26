@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using RegisterRequest = JackOfAllCodes.Web.Models.ViewModels.RegisterRequest;
 using JackOfAllCodes.Web.Models.ViewModels;
-using Amazon.Runtime.Internal;
 
 public class AccountController : Controller
 {
