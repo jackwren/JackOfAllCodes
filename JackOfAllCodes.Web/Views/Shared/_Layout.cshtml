@@ -19,13 +19,15 @@
 </head>
 <body>
     <!-- Header with title on the right and a hamburger icon for the navbar -->
-    <header class="header bg-dark">
+    <header class="header">
         <div class="container d-flex justify-content-between align-items-center">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
                 ☰
             </button>
             <!-- Page Title/Header-->
-            <a class="header-title text-light" asp-area="" asp-controller="Home" asp-action="Index">JackOfAllCodes</a>
+            <a class="header-title" asp-area="" asp-controller="Home" asp-action="Index">
+                <img src="~/images/header/jackofallcodes-high-resolution-logo.png" alt="JackOfAllCodes" class="logo">
+            </a>
             <!-- Conditional Login / Logout Button -->
             @if (User.Identity != null && User.Identity.IsAuthenticated)
             {

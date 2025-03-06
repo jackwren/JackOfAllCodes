@@ -1,8 +1,3 @@
-/* Base font size */
-html {
-    font-size: 14px;
-}
-
 @media (max-width: 768px) {
     /* Stack navbar items vertically */
     .navbar-nav {
@@ -53,47 +48,89 @@ html {
 .btn:focus,
 .btn:active:focus,
 .btn-link.nav-link:focus,
-.form-control:focus
-
-/* Body setup */
-html {
-    position: relative;
-    min-height: 100%;
+.form-control:focus,
+.btn:active {
+    transform: none; /* Prevent size change on click */
 }
 
-body {
+/* Body setup */
+.body {
     margin-bottom: 60px;
     font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4; /* Subtle background color */
-    color: #333; /* Dark text for better contrast */
     overflow-x: hidden; /* Prevent horizontal overflow */
 }
 
 /* Header Section */
 .header {
     padding: 1rem;
-    background-color: #d32f2f; /* Red background for header */
+    background-color: #222222;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #b71c1c; /* Darker red border for header */
+    border-bottom: 2px solid #FF4136; /* Darker red border for header */
 }
 
-/* Header Title */
 .header-title {
     padding: 1rem;
     font-size: 1.5rem;
     font-weight: bold;
     margin-right: auto;
-    color: white; /* White text for title */
 }
+/**/
 
-/* Navbar Toggler */
+/* Navbar Styling */
 .navbar-toggler {
     border: none;
     font-size: 1.5rem;
     color: white; /* White icon */
 }
+
+.logo {
+    height: 50px; /* Adjust height as needed */
+    width: auto; /* Keeps the aspect ratio */
+    display: block; /* Removes any extra spacing */
+}
+
+@media (max-width: 768px) {
+    .logo {
+        height: 40px; /* Smaller height for smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .logo {
+        height: 30px; /* Even smaller height for very small screens */
+    }
+}
+
+.navbar {
+    border-bottom: 2px solid #FF4136; /* Darker red border */
+}
+
+.navbar-brand {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar-nav .nav-link {
+    color: white;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    padding: 10px 15px;
+}
+
+    .navbar-nav .nav-link:hover {
+        background-color: #FF4136; /* Darker red hover effect */
+        color: white;
+        border-radius: 5px;
+    }
+
+.navbar-nav .nav-item.active .nav-link {
+    background-color: #FF4136; /* Active link background */
+    color: white;
+}
+/**/
 
 /* Tooltip */
 .info-icon {
@@ -124,36 +161,7 @@ body {
 .info-icon:hover .tooltip-text {
     visibility: visible;
 }
-
-/* Navbar Styling */
-.navbar {
-    background-color: #d32f2f; /* Red background for navbar */
-    border-bottom: 2px solid #b71c1c; /* Darker red border */
-}
-
-.navbar-brand {
-    color: white;
-    font-size: 1.5rem;
-    font-weight: bold;
-}
-
-.navbar-nav .nav-link {
-    color: white;
-    font-size: 1.2rem;
-    text-transform: uppercase;
-    padding: 10px 15px;
-}
-
-    .navbar-nav .nav-link:hover {
-        background-color: #b71c1c; /* Darker red hover effect */
-        color: white;
-        border-radius: 5px;
-    }
-
-.navbar-nav .nav-item.active .nav-link {
-    background-color: #b71c1c; /* Active link background */
-    color: white;
-}
+/**/
 
 /* Login/Logout Button */
 .btn-outline-light {
@@ -162,16 +170,17 @@ body {
 }
 
 .btn-outline-light:hover {
-    background-color: #d32f2f; /* Red hover effect */
+    background-color: #FF4136; /* Red hover effect */
     color: white;
-    border-color: #d32f2f; /* Match the border with the red background */
+    border-color: #FF4136; /* Match the border with the red background */
 }
 
 .btn-outline-dark:hover {
-    background-color: #d32f2f; /* Red hover effect */
+    background-color: #FF4136; /* Red hover effect */
     color: white;
-    border-color: #d32f2f; /* Match the border with the red background */
+    border-color: #FF4136; /* Match the border with the red background */
 }
+/**/
 
 /* Custom Favicon styling */
 .navbar-brand img {
@@ -180,19 +189,21 @@ body {
     border-radius: 50%;
     margin-right: 10px;
 }
+/**/
 
 /* Utility Classes */
 .text-red {
-    color: #d32f2f; /* Apply red everywhere */
+    color: #FF4136; /* Apply red everywhere */
 }
 
 .bg-red {
-    background-color: #d32f2f; /* Apply red background */
+    background-color: #FF4136; /* Apply red background */
 }
 
 .hover-red:hover {
-    color: #d32f2f; /* Red hover color */
+    color: #FF4136; /* Red hover color */
 }
+/**/
 
 /* Styling for containers and sections */
 .container {
@@ -200,11 +211,23 @@ body {
 }
 
 .section-header {
-    color: #d32f2f; /* Red header */
+    color: #FF4136; /* Red header */
     font-size: 1.8rem;
     font-weight: bold;
     margin-bottom: 1rem;
 }
+
+.fixed-height-box {
+    height: 100%; /* Ensure the box takes the full height of its container */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+    .fixed-height-box a {
+        align-self: flex-start; /* Align the anchor to the start of the flex container */
+        width: auto; /* Ensure the anchor width is not stretched */
+    }
+/**/
 
 /* Custom LinkedIn Button */
 .btn-linkedin {
@@ -219,8 +242,6 @@ body {
 }
 
     .btn-linkedin:hover {
-        background-color: #d32f2f; /* Darker LinkedIn Blue on hover */
-        border-color: #d32f2f;
         color: white;
         text-decoration: none;
     }
@@ -243,8 +264,6 @@ body {
 }
 
     .btn-github:hover {
-        background-color: #d32f2f; /* Darker GitHub Grey on hover */
-        border-color: #d32f2f;
         color: white;
         text-decoration: none;
     }
@@ -293,7 +312,6 @@ body {
     overflow-wrap: break-word;
     line-height: 1.8;
 }
-
 /**/
 
 /* Footer Styling (non-fixed version) */
