@@ -1,7 +1,6 @@
 ﻿using JackOfAllCodes.Web.DataAccess;
 using JackOfAllCodes.Web.Models.Domain;
 using Microsoft.EntityFrameworkCore;
-using NpgsqlTypes;
 
 namespace JackOfAllCodes.Web.Repositories
 {

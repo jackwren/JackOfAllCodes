@@ -28,16 +28,24 @@
             <a class="header-title" asp-area="" asp-controller="Home" asp-action="Index">
                 <img src="~/images/header/jackofallcodes-high-resolution-logo.png" alt="JackOfAllCodes" class="logo">
             </a>
-            <!-- Conditional Login / Logout Button -->
             @if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                <a href="@Url.Action("Profile", "Account")" class="btn btn-outline-light ms-2">Profile</a>
-                <a href="@Url.Action("Logout", "Account")" class="btn btn-outline-light ms-2">Sign Out</a>
+                <!-- Profile Dropdown (Visible Only When Logged In) -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-light dropdown-toggle ms-2" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li><a class="dropdown-item" href="@Url.Action("Profile", "Account")">Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="@Url.Action("Logout", "Account")">Sign Out</a></li>
+                    </ul>
+                </div>
             }
             else
             {
+                <!-- Sign In Button (Visible Only When Logged Out) -->
                 <a href="@Url.Action("Login", "Account")" class="btn btn-outline-light ms-2">Sign In</a>
-                <a href="@Url.Action("Register", "Account")" class="btn btn-outline-light ms-2">Register</a>
             }
         </div>
     </header>
